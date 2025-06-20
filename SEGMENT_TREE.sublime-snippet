@@ -1,0 +1,63 @@
+<snippet>
+	<content><![CDATA[
+
+struct ST{
+    #define lc  (node << 1)
+    #define rc  lc + 1
+    int n;
+    vector<int> tree, v;
+    ST(vector<int> v) : v(v){
+        n = v.size() - 1; //-1 for 1 indexed v
+        tree.resize(4 * n);
+        build(1, 1, n);
+    }
+    inline int pull(int &a, int &b){
+        return max(a, b);   //For max query
+    }
+
+    int query(int node, int lo, int hi, int l, int r){
+        if(hi < l or lo > r)return 0;
+        if(lo >= l and hi <= r)return tree[node];
+        int mid = (lo + hi) >> 1;
+        int q1 = query(lc, lo , mid, l, r);
+        int q2 = query(rc, mid + 1, hi, l, r);
+        return pull(q1, q2);
+    }
+
+    void update(int node, int lo, int hi, int l, int val){
+        if(lo > l or hi < l)return;
+        if(lo == hi){
+            tree[node] = v[lo] = val;
+            return;
+        }
+        int mid = (lo + hi) >> 1;
+        update(lc, lo , mid, l, val);
+        update(rc, mid + 1, hi, l, val);
+        tree[node] = pull(tree[lc], tree[rc]);
+    }
+    
+    void build(int node, int lo, int hi){
+        if(hi == lo){
+            tree[node] = v[lo];
+            return;
+        }
+        int mid = (lo + hi) >> 1;
+        build(lc, lo, mid);
+        build(rc, mid + 1, hi);
+        tree[node] = pull(tree[lc], tree[rc]);
+    }
+
+    int query(int l, int r){
+        return query(1, 1, n, l, r);
+    }
+    void update(int l, int val){
+        update(1, 1, n, l, val);
+    }
+};
+
+
+]]></content>
+	<tabTrigger>SEGMENT_TREE</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+

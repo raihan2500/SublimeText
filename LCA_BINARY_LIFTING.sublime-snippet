@@ -1,0 +1,43 @@
+<snippet>
+	<content><![CDATA[
+
+const int LG = 20;
+int depth[N], par[N][LG + 1];
+
+void init(int u = 1, int p = 0){
+    par[u][0] = p;
+    for(int i = 1; i <= LG; i++)par[u][i] = par[par[u][i - 1]][i - 1];
+    for(auto &v : graph[u])if(v != p){
+        depth[v] = depth[u] + 1;
+        init(v, u);
+    }
+}
+
+int kth(int u, int k){
+    if(k < 0)k = 0;
+    while(k){
+        int lg = log2(k);
+        k -= (1 << lg);
+        u = par[u][lg];
+    }
+    return u;
+}
+
+int lca(int u, int v){
+    if(depth[u] < depth[v])swap(u, v);
+    u = kth(u, depth[u] - depth[v]);
+    if(u == v)return u;
+    for(int i = LG; i >= 0; i--){
+        if(par[u][i] == par[v][i])continue;
+        u = par[u][i];
+        v = par[v][i];
+    }
+    return par[u][0];
+}
+
+
+]]></content>
+	<tabTrigger>LCA_BINARY_LIFTING</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+

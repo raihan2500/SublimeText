@@ -1,0 +1,16 @@
+<snippet>
+	<content><![CDATA[
+
+#pragma GCC target("avx2")
+#pragma GCC target("popcnt")
+#pragma GCC target("lzcnt")
+#pragma GCC optimize("O3")
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize("unroll-loops")
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>GCC_OPTIMIZER</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope>
+</snippet>

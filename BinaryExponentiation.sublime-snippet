@@ -1,0 +1,17 @@
+<snippet>
+	<content><![CDATA[
+
+int binExp(int a, int b, int mod = M){
+    int ans = 1; a %= M;
+    for(; b; b >>= 1, a = (__uint128_t) a * a % mod){
+        (b & 1) && (ans = (__uint128_t) ans * a % mod);
+    }
+    return ans;
+}
+int mmiOfX(int b){ return binExp(b, M - 2);}
+
+
+]]></content>
+	<tabTrigger>BinaryExp_with_MMI</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>

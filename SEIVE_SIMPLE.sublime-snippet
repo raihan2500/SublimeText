@@ -1,0 +1,23 @@
+<snippet>
+	<content><![CDATA[
+vector<int> primes, hp(N);
+vector<bool>isPrime(N, 1);
+void seive(){
+    isPrime[0] = isPrime[1] = 0;
+    for(int i = 2; i < N; i++){
+        if(isPrime[i]){
+            hp[i] = i;
+            for(int j = i + i; j < N; j += i){
+                isPrime[j] = false;
+                hp[j] = i;
+            }
+        }
+    }
+    for(int i = 2; i < N; i++)if(isPrime[i])primes.push_back(i);
+}
+
+]]></content>
+	<tabTrigger>SEIVE_SIMPLE</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+

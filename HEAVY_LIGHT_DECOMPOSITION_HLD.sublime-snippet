@@ -1,0 +1,162 @@
+<snippet>
+	<content><![CDATA[
+
+int q, v[N];
+struct ST{
+    #define lc  2 * node
+    #define rc  2 * node + 1
+    
+    vector<int> tree, lazy;
+    ST(){
+        tree = lazy = vector<int>(4 * N);
+    }
+
+    inline void pull(int node){
+        tree[node] = tree[lc] + tree[rc]; /*********/
+    }
+    inline void push(int node, int lo, int hi){ /*************/
+        if(lazy[node] == 0)return;
+        
+        int val = lazy[node]; 
+        tree[node] += (hi - lo + 1) * val;
+        lazy[node] = 0;
+        
+        if(lo == hi)return;
+        lazy[lc] = lazy[lc] + val;
+        lazy[rc] = lazy[rc] + val;
+    }
+
+    void build(int node, int lo, int hi){
+        if(lo == hi){
+            tree[node] = v[lo];
+            return;
+        }
+        int mid = (lo + hi) / 2;
+        build(lc, lo, mid);
+        build(rc, mid + 1, hi);
+        pull(node);
+    }
+
+    void update(int node, int lo, int hi, int l, int r, int val){
+        push(node, lo, hi);
+        if(r < lo or l > hi)return;
+        if(lo >= l and hi <= r){
+            lazy[node] += val;    /************/
+            push(node, lo, hi);
+            return;
+        }
+        int mid = (lo + hi) / 2;
+        update(lc, lo, mid, l, r, val);
+        update(rc, mid + 1, hi, l, r, val);
+        pull(node);
+    }
+
+    int query(int node, int lo, int hi, int l, int r){
+        push(node, lo, hi);
+        if(r < lo or l > hi)return 0;  /************/
+        if(lo >= l and hi <= r)return tree[node];
+        int mid = (lo + hi) / 2;
+        int q1 = query(lc, lo, mid, l, r);
+        int q2 = query(rc, mid + 1, hi, l, r);
+
+        return q1 + q2; /********/
+    }
+} st;
+
+
+int n, m;
+const int LG = 19;
+vector<vector<int>> graph(N);
+int head[N], pos[N], cur_pos = 1;
+int depth[N], par[N][LG +  1], sz[N];
+
+void dfs(int u = 1, int p = 0){
+    sz[u] = 1;
+    par[u][0] = p;
+    for(int i = 1; i <= LG; i++)par[u][i] = par[par[u][i - 1]][i - 1];
+    if(p)graph[u].erase(find(graph[u].begin(), graph[u].end(), p));
+    for(auto &v : graph[u]){
+        if(u == p)continue;
+        depth[v] = depth[u] + 1;
+        dfs(v, u);
+        sz[u] += sz[v];
+        if(sz[v] > sz[graph[u][0]])swap(v, graph[u][0]);
+    }
+}
+
+void hld(int u = 1){
+    pos[u] = cur_pos++;
+    for(auto &v : graph[u]){
+        if(v == graph[u][0])head[v] =  head[u];
+        else head[v] = v;
+        hld(v);
+    }
+}
+
+int lca(int u, int v){
+    if(depth[u] < depth[v])swap(u, v);
+    int dif = depth[u] - depth[v];
+    while(dif){
+        int lg = log2(dif);
+        dif -= (1 << lg);
+        u = par[u][lg];
+    }
+    if(u == v)return u;
+    for(int i = LG; i >= 0; i--){
+        if(par[u][i] == par[v][i])continue;
+        u = par[u][i];
+        v = par[v][i];
+    }
+    return par[u][0];
+}
+
+int query_up(int u, int v){
+    int ans = 0;
+    while(head[u] != head[v]){
+        int chain_head = head[u];
+        int cur = st.query(1, 1, n, pos[chain_head], pos[u]);
+        u = par[chain_head][0];
+
+        ans += cur;
+    }
+    ans += st.query(1, 1, n, pos[v], pos[u]);
+    return ans;
+}
+
+int query(int u, int x){
+    if(depth[u] < depth[x])swap(u, x);
+    int l = lca(u, x);
+    int ans = query_up(u, l);
+    if(x != l)ans += query_up(x, l) - v[l];
+    return ans;
+}
+
+void solve(){
+    cin >> n;
+    int vals[n + 1];
+    for(int i = 1; i <= n; i++)cin >> vals[i];
+
+    for(int i = 0; i < n - 1; i++){
+        int x, y;
+        cin >> x >> y;
+        graph[x].push_back(y);
+        graph[y].push_back(x);
+    }
+
+    dfs();
+    head[1] = 1;
+    hld();
+    
+    Forn(i,n)v[pos[i]] = vals[i];
+    st.build(1, 1, n);
+
+    clog << query(10, 3) << endl;
+}
+
+
+
+]]></content>
+	<tabTrigger>HEAVY_LIGHT_DECOMPOSITION_HLD</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+

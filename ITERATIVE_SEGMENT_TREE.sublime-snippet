@@ -1,0 +1,53 @@
+<snippet>
+	<content><![CDATA[
+
+struct ST{
+    int n;
+    vector<int> v, t;
+    ST(vector<int>&v) : v(v){ //0-based index
+        n = v.size();
+        t.resize(2 * n);
+        build();
+    }
+
+    inline int pull(int &a, int &b){
+        return (a + b);   //For sum query
+    }
+
+    void build(){
+        for(int i = 0; i < n; i++)t[n + i] = v[i];
+        for(int i = n - 1; i > 0; i--){
+            t[i] = pull(t[i << 1], t[i << 1 | 1]);
+        }
+    }
+    void update(int pos, int val){
+        v[pos] = val;
+        pos += n;
+        t[pos] = val;
+
+        while(pos > 1){
+            pos >>= 1;
+            t[pos] = pull(t[pos << 1], t[pos << 1 | 1]);
+        }
+    }
+
+    int query(int l, int r){
+        l += n;
+        r += n;
+        int ans = 0;
+        while(l < r){
+            if(l & 1)ans = pull(ans, t[l++]);
+            if(r & 1)ans = pull(ans, t[--r]);
+            l >>= 1;
+            r >>= 1;
+        }
+        return ans;
+    }
+};
+
+
+]]></content>
+	<tabTrigger>ITERATIVE_SEGMENT_TREE</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+

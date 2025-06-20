@@ -1,0 +1,23 @@
+<snippet>
+	<content><![CDATA[
+
+int fact[N], inv[N];
+void factorial(){
+   fact[0] = inv[0] = 1;
+   for(int i = 1; i < N; i++){
+       fact[i] = fact[i - 1] * i % M;
+   }
+   inv[N - 1] = mmiOfX(fact[N - 1]);
+   for(int i = N - 2; i >= 0; i--){
+       inv[i] = inv[i + 1] * (i + 1) % M;
+   }
+}
+int nCr(int n, int r){return (__uint128_t) (fact[n] * inv[r] % M) * inv[n - r] % M; }
+int nPr(int n, int r){return (__uint128_t) fact[n] * inv[n - r] % M; }
+
+
+]]></content>
+	<tabTrigger>FACTORIALS</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+

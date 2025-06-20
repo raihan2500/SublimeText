@@ -1,0 +1,16 @@
+[
+	{ "keys": ["`"], "command": "move", "args": {"by": "characters", "forward": true} },
+    { "keys": ["f5"], "command": "build" },
+
+	// { "keys": ["shift+tab"], "command": "insert", "args": {"characters": "\t"} },
+
+	{
+       "keys": ["alt+1"],
+       "command": "terminus_open",
+       "args" : {
+           "cmd": "bash",
+           "cwd": "${file_path:${folder}}",
+           "panel_name": "Terminus"
+       }
+   }
+]

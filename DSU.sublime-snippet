@@ -1,0 +1,27 @@
+<snippet>
+	<content><![CDATA[
+class Dsu{
+    vector<int> par, sz;
+public:
+    Dsu(int n = 2e5) : par(n + 1), sz(n + 1, 1){
+        iota(par.begin(), par.end(), 0);
+    }
+    int Find(int v){
+        return par[v] = (par[v] == v) ? v : Find(par[v]);
+    }
+    void Union(int a, int b){
+        a = Find(a);
+        b = Find(b);
+        if(a == b)return;
+        if(sz[a] < sz[b])swap(a, b);
+        par[b] = a;
+        sz[a] += sz[b];
+    }
+};
+	
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>DSU</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope>
+</snippet>

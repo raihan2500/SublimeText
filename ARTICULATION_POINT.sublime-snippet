@@ -1,0 +1,46 @@
+<snippet>
+	<content><![CDATA[
+
+int timer;
+set<int> art_point;
+vector<int> in(N), low(N), vis(N);
+
+void dfs(int v, int p = -1){
+    vis[v] = true;
+    in[v] = low[v] = timer++;
+    int children = 0;
+
+    for(auto child : graph[v]){
+        if(child == p)continue;
+        if(vis[child]){
+            low[v] = min(low[v], in[child]);
+        }else{
+            dfs(child, v);
+            low[v] = min(low[v], low[child]);
+            if(low[child] >= in[v] and p != -1){
+                art_point.insert(v);
+            }
+            children++;
+        }
+    }
+    if(p == -1 and children > 1){
+        art_point.insert(v);
+    }
+}
+void find_cutpoints(){
+    timer = 0;
+    in.assign(n + 1, 0);
+    low.assign(n + 1, 0);
+    vis.assign(n + 1, 0);
+    art_point.clear();
+    
+    for(int i = 1; i <= n; i++){
+        if(!vis[i])dfs(i);
+    }
+}
+
+]]></content>
+	<tabTrigger>ARTICULATION_POINT</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+

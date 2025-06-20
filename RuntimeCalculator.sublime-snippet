@@ -1,0 +1,14 @@
+<snippet>
+	<content><![CDATA[
+
+auto start_code = chrono::high_resolution_clock::now();
+  
+auto end_code = chrono::high_resolution_clock::now();
+auto duration = chrono::duration_cast<chrono::milliseconds>(end_code - start_code);
+cerr << duration.count() << " ms\n";
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>CPU_Runtime_Calculator</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope>
+</snippet>

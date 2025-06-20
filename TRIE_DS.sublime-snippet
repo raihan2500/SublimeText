@@ -1,0 +1,36 @@
+<snippet>
+	<content><![CDATA[
+struct Trie{
+    struct node{
+        bool end = false;
+        node* next[26] = {nullptr};
+    };
+    node* root = new node();
+
+    void insert(string str){
+        int i = 0;
+        node* it = root;
+
+        while(i < str.size()){
+            if(it->next[str[i] - 'a'] == nullptr)it->next[str[i] - 'a'] = new node();
+            it = it->next[str[i++] - 'a'];
+        }
+        it->end = true;
+    }
+
+    bool search(string str){
+        int i = 0;
+        node* it = root;
+        while(i < str.size()){
+            if(it->next[str[i] - 'a'] == nullptr)return false;
+            it = it->next[str[i++] - 'a'];
+        }
+        return it->end;
+    }
+};
+
+]]></content>
+	<tabTrigger>TRIE_DS</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+

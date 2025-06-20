@@ -1,0 +1,22 @@
+<snippet>
+	<content><![CDATA[
+
+struct Compress{
+    vector<int> v;
+    Compress(const vector<int>& vec) : v(vec){
+        sort(v.begin(), v.end());
+        v.erase(unique(v.begin(), v.end()), v.end());
+    }
+    int get_id(int x){
+        return lower_bound(v.begin(), v.end(), x) - v.begin() + 1;
+    }
+    int size(){
+        return v.size();
+    }
+};
+
+]]></content>
+	<tabTrigger>COORDINATE_COMPRESSION</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+

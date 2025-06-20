@@ -1,0 +1,7 @@
+{
+	"cmd" : "g++ -std=c++17 $file_name -o $file_base_name -DSUBLIME &&  ./$file_base_name<inputf.in>outputf.in && rm $file_base_name",
+	"shell" : true,
+	"selector" : "source.c",
+	"working_dir" : "$file_path",
+	"file_regex" : "^(.[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
+}

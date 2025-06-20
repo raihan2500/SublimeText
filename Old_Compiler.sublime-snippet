@@ -1,0 +1,59 @@
+<snippet>
+	<content><![CDATA[
+#include <cstdlib>
+#include <cctype>
+#include <cmath>
+#include <cstring>
+#include <cstdio>
+#include <ctime>
+#include <cassert>
+#include <climits>
+#include <cfloat>
+#include <cstdarg>
+#include <csignal>
+#include <csetjmp>
+#include <cstddef>
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <sstream>
+#include <istream>
+#include <ostream>
+#include <ios>
+#include <iosfwd>
+#include <streambuf>
+
+#include <algorithm>
+#include <functional>
+#include <utility>
+#include <numeric>
+#include <limits>
+
+#include <vector>
+#include <deque>
+#include <list>
+#include <set>
+#include <map>
+#include <stack>
+#include <queue>
+#include <bitset>
+#include <string>
+#include <iterator>
+#include <stdexcept>
+#include <exception>
+#include <new>
+#include <typeinfo>
+using namespace std;
+
+
+int main(){
+
+}
+
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>Old_Compiler</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

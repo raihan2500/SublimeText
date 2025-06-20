@@ -1,0 +1,28 @@
+<snippet>
+	<content><![CDATA[
+
+class Dsu{
+    vector<int> par, rank;
+public:
+    Dsu(int n = 2e5): par(n + 1), rank(n + 1){
+        iota(par.begin(), par.end(), 0);
+    }
+    int Find(int v){
+        return par[v] = (par[v] == v) ? v : Find(par[v]);
+    }
+    void Union(int a, int b){
+        a = Find(a);
+        b = Find(b);
+        if(a == b)return;
+        if(rank[a] < rank[b])swap(a, b);
+        if(rank[a] == rank[b])rank[a]++;
+        par[b] = a;
+    }
+};
+
+
+]]></content>
+	<tabTrigger>DSU_RANK</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
