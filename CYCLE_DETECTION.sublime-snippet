@@ -1,5 +1,5 @@
 <snippet>
-	<content><![CDATA[
+	<content><![CDATA[ 
 bool cycle(int u, vector<int> &vis, vector<int> &stack){
   vis[u] = true;
   stack[u] = true;
