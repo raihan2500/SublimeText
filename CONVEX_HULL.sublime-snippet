@@ -1,6 +1,6 @@
 <snippet>
 	<content><![CDATA[
-
+ 
 struct Point{
   int x, y;
 } p0;
