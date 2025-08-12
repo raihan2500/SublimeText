@@ -1,7 +1,6 @@
 <snippet>
 	<content><![CDATA[
 
-
 const double eps = 1e-9;
 const double PI = acos(-1.0);
 int sign(double x){return (x > eps) - (x < -eps);}
