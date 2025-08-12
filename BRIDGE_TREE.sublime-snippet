@@ -1,0 +1,82 @@
+<snippet>
+	<content><![CDATA[
+
+int n, m;
+vin g[N], t[N];
+map<pair<int, int>, int> eid;
+int timer, in[N], low[N];
+bool is_bridge[N], vis[N];
+
+void dfs(int u, int p){
+  in[u] = low[u] = ++timer;
+  vis[u] = true;
+  for(auto &v : g[u])if(v != p){
+    if(vis[v]){
+      low[u] = min(low[u], in[v]);
+    }else{
+      dfs(v, u);
+      low[u] = min(low[u], low[v]);
+      if(in[u] < low[v]){
+        is_bridge[eid[{u, v}]] = true;
+      }
+    }
+  }
+}
+
+int comp[N], comp_sz[N], cid;
+void compress(int u, int &cnt){
+  comp[u] = cid;
+  cnt++;
+  for(auto &v : g[u]){
+    int id = eid[{u, v}];
+    if(!comp[v] and !is_bridge[id]){
+      compress(v, cnt);
+    }
+  }
+}
+
+void reset(){
+  eid.clear();
+  timer = cid = 0;
+  for(int i = 0; i <= max(n, m); i++){
+    g[i].clear(); t[i].clear();
+    comp[i] = comp_sz[i] = 0;
+    in[i] = 0, low[i] = vis[i] = 0, is_bridge[i] = 0;
+  }
+}
+
+void init(){
+  cin >> n >> m;
+  reset();
+  vector<pair<int, int>> edg(m + 1);
+  for(int i = 1; i <= m; i++){
+    int x, y;
+    cin >> x >> y;
+    g[x].push_back(y);
+    g[y].push_back(x);
+    edg[i] = {x, y};
+    eid[{x, y}] = eid[{y, x}] = i;
+  }
+
+  dfs(1, 0); //If graph contain only one CC
+  for(int i = 1; i <= n; i++){
+    if(!comp[i]){
+      ++cid; 
+      compress(i, comp_sz[cid]);
+    }
+  }
+  for(int i = 1; i <= m; i++){
+    if(!is_bridge[i])continue;
+    int u = edg[i].first;
+    int v = edg[i].second;
+    u = comp[u]; v = comp[v];
+    t[u].push_back(v);
+    t[v].push_back(u);
+  }
+}
+
+]]></content>
+	<tabTrigger>BRIDGE_TREE</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+

@@ -47,22 +47,22 @@ const int M = 1e9 + 7;
 const int N = 2e5 + 100;
 
 void _(){
+  $1    
     
-
 }
 
 int32_t main(){
     
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL); cout.tie(NULL);
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL); cout.tie(NULL);
 
-    int test = 1;  
-    cin>>test;
-    for(int i = 1; i <= test; i++){
-        // cout << "Case " << i <<": ";
-        _();
-    }
-    return 0;
+  int test = 1;  
+  cin>>test;
+  for(int i = 1; i <= test; i++){
+      // cout << "Case " << i <<": ";
+      _();
+  }
+  return 0;
 }
 ]]></content>
 	<tabTrigger>cpp_snippet</tabTrigger>

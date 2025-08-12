@@ -1,0 +1,31 @@
+<snippet>
+	<content><![CDATA[
+bool cycle(int u, vector<int> &vis, vector<int> &stack){
+  vis[u] = true;
+  stack[u] = true;
+  bool ans = false;
+  for(auto &v : graph[u]){
+    if(!vis[u]){
+      if(cycle(v, vis, stack))return true;
+    }else if(stack[v]){
+      return true;
+    }
+  }
+  stack[u] = false;
+  return false;
+}
+bool isCyclic(){
+  vector<int> vis(n + 1, 0), stack = vis;
+  for(int i = 1; i <= n; i++){
+    if(!vis[i]){
+      if(cycle(i, vis, stack))return true;
+    }
+  }
+  return false;
+}
+
+]]></content>
+	<tabTrigger>CYCLE_DETECTION</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+

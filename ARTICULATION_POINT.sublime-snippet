@@ -5,39 +5,40 @@ int timer;
 set<int> art_point;
 vector<int> in(N), low(N), vis(N);
 
-void dfs(int v, int p = -1){
-    vis[v] = true;
-    in[v] = low[v] = timer++;
-    int children = 0;
+void dfs(int u, int p = 0){
+  vis[u] = true;
+  in[u] = low[u] = timer++;
+  int cnt = 0;
 
-    for(auto child : graph[v]){
-        if(child == p)continue;
-        if(vis[child]){
-            low[v] = min(low[v], in[child]);
-        }else{
-            dfs(child, v);
-            low[v] = min(low[v], low[child]);
-            if(low[child] >= in[v] and p != -1){
-                art_point.insert(v);
-            }
-            children++;
-        }
-    }
-    if(p == -1 and children > 1){
+  for(auto &v : graph[u])if(v != p){
+    if(vis[v]){
+      low[u] = min(low[u], in[v]);
+    }else{
+      dfs(v, u);
+      low[u] = min(low[u], low[v]);
+      if(low[v] >= in[u] and p){
         art_point.insert(v);
+      }
+      cnt++;
     }
+  }
+  if(p and cnt > 1){
+    art_point.insert(v);
+  }
 }
+
 void find_cutpoints(){
-    timer = 0;
-    in.assign(n + 1, 0);
-    low.assign(n + 1, 0);
-    vis.assign(n + 1, 0);
-    art_point.clear();
-    
-    for(int i = 1; i <= n; i++){
-        if(!vis[i])dfs(i);
-    }
+  timer = 0;
+  in.assign(n + 1, 0);
+  low.assign(n + 1, 0);
+  vis.assign(n + 1, 0);
+  art_point.clear();
+  
+  for(int i = 1; i <= n; i++){
+    if(!vis[i])dfs(i);
+  }
 }
+
 
 ]]></content>
 	<tabTrigger>ARTICULATION_POINT</tabTrigger>
