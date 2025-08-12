@@ -1,6 +1,6 @@
 <snippet>
 	<content><![CDATA[
-
+ 
 const int K = 26;
 struct Node{
   int next[K], go[K];
