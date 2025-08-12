@@ -1,6 +1,6 @@
 <snippet>
 	<content><![CDATA[
-
+ 
 int n, m;
 vin g[N], t[N];
 map<pair<int, int>, int> eid;
