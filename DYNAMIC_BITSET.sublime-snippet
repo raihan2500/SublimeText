@@ -52,7 +52,10 @@ struct DynBits {
   }
   int count() const {
     int c = 0;
-    for (auto x : bits) c += __builtin_popcountll(uint64_t(x & 0xFFFFFFFFFFFFFFFFULL)) + __builtin_popcountll(uint64_t(x >> 64));
+    for (auto &x : bits){
+      if(sizeof(BlockType) == 8)c += __builtin_popcountll(x);
+      else c += __builtin_popcountll((uint64_t(x & 0xFFFFFFFFFFFFFFFFULL)) + __builtin_popcountll(uint64_t(x >> 64)));
+    } 
     return c;
   }
   int size() const { return n; }
@@ -120,9 +123,7 @@ struct DynBits {
     return s;
   }
 
-  friend std::ostream& operator << (std::ostream &os, const DynBits &x){
-    return os << x.to_string();
-  }
+  friend std::ostream& operator << (std::ostream &os, const DynBits &x){return os << x.to_string();}
 
 private:
   void trim() {
@@ -130,6 +131,7 @@ private:
     if (n % W) bits.back() &= (BlockType(1) << (n % W)) - 1;
   }
 };
+
 
 ]]></content>
 	<tabTrigger>DYNAMIC_BITSET</tabTrigger>
