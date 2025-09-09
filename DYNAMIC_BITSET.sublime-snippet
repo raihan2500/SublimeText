@@ -1,6 +1,5 @@
 <snippet>
 	<content><![CDATA[
-
 struct DynBits {
   int n;
   vector<uint64_t> bits;
@@ -44,7 +43,7 @@ struct DynBits {
   bool test(int pos) const { return (*this)[pos]; }
   bool any() const { for (auto x : bits) if (x) return true; return false; }
   bool none() const { return !any(); }
-  bool all() const {
+  bool All() const {
     for (int i = 0; i < (int)bits.size(); i++) {
       uint64_t mask = ~0ULL;
       if (i == (int)bits.size() - 1 && n % 64) {
