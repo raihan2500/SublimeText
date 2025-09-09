@@ -1,5 +1,6 @@
 <snippet>
 	<content><![CDATA[
+
 struct DynBits {
   int n;
   vector<uint64_t> bits;
