@@ -8,7 +8,7 @@ struct DynBits {
   static constexpr int W = sizeof(T) * 8;
 
   DynBits(int n = 0) : n(n) {
-    bits.assign((n + W - 1) / W, 0);
+    bits.assign((n + (W - 1)) / W, 0);
   }
 
   struct reference {
@@ -21,7 +21,10 @@ struct DynBits {
       else ref &= ~(T(1) << pos);
       return *this;
     }
-    reference& flip() { ref ^= (T(1) << pos); return *this; }
+    reference& flip() {
+      ref ^= (T(1) << pos);
+      return *this;
+    }
   };
 
   reference operator[](int idx) { return reference(bits[idx / W], idx % W); }
@@ -43,23 +46,46 @@ struct DynBits {
     int sz = bits.size();
     for (int i = 0; i < sz; i++) {
       T mask = ~T(0);
-      if (i == sz-1 && n % W) mask = (T(1) << (n % W)) - 1;
+      if (i == sz-1 && n % W) mask = (T(1) << (n % W))-1;
       if ((bits[i] & mask) != mask) return false;
     }
     return true;
   }
   int count() const {
     int c = 0;
-    for (auto &x : bits) {
-      if(W == 8)c += __builtin_popcountll(x);
-      else {
-        c += __builtin_popcountll(uint64_t(x & 0xFFFFFFFFFFFFFFFFULL));
-        c += __builtin_popcountll(uint64_t(x >> 64));
-      }
-    }
+    for (auto &x : bits){
+      if constexpr (sizeof(T) == 8) c += __builtin_popcountll(x);
+      else c += __builtin_popcountll((uint64_t)(x & 0xFFFFFFFFFFFFFFFFULL)) + __builtin_popcountll((uint64_t)(x >> 64));
+    } 
     return c;
   }
   int size() const { return n; }
+
+  DynBits operator&(const DynBits &other) const { 
+    DynBits res(n);
+    for (int i = 0; i < (int)bits.size(); i++) res.bits[i] = bits[i] & other.bits[i];
+    return res;
+  }
+  DynBits operator|(const DynBits &other) const { 
+    DynBits res(n);
+    for (int i = 0; i < (int)bits.size(); i++) res.bits[i] = bits[i] | other.bits[i];
+    return res;
+  }
+  DynBits operator^(const DynBits &other) const { 
+    DynBits res(n);
+    for (int i = 0; i < (int)bits.size(); i++) res.bits[i] = bits[i] ^ other.bits[i];
+    return res;
+  }
+  DynBits operator~() const {
+    DynBits res(n);
+    for (int i = 0; i < (int)bits.size(); i++) res.bits[i] = ~bits[i];
+    res.trim();
+    return res;
+  }
+
+  DynBits& operator&=(const DynBits &other) { for(int i=0;i<(int)bits.size();i++) bits[i]&=other.bits[i]; return *this; }
+  DynBits& operator|=(const DynBits &other) { for(int i=0;i<(int)bits.size();i++) bits[i]|=other.bits[i]; return *this; }
+  DynBits& operator^=(const DynBits &other) { for(int i=0;i<(int)bits.size();i++) bits[i]^=other.bits[i]; return *this; }
 
   DynBits operator<<(int k) const {
     DynBits res(n);
@@ -96,15 +122,13 @@ struct DynBits {
     return s;
   }
 
-  friend ostream& operator<<(ostream &os, const DynBits &x) {
-    return os << x.to_string();
-  }
+  friend std::ostream& operator << (std::ostream &os, const DynBits &x){return os << x.to_string();}
 
-private:
   void trim() {
     if (n % W) bits.back() &= (T(1) << (n % W)) - 1;
   }
 };
+
 
 ]]></content>
 	<tabTrigger>DYNAMIC_BITSET</tabTrigger>
