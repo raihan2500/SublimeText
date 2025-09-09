@@ -1,9 +1,0 @@
-<snippet>
-	<content><![CDATA[
-ssews
-
-]]></content>
-	<tabTrigger>dyn</tabTrigger>
-	<scope>source.c++</scope>
-</snippet>
-
