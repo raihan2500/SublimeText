@@ -1,7 +1,142 @@
 <snippet>
 	<content><![CDATA[
+struct DynBits {
+  int n;
+  vector<uint64_t> bits;
 
-sffsds
+  DynBits(int n = 0) : n(n) {
+    bits.assign((n + 63) / 64, 0);
+  }
+
+  struct reference {
+    uint64_t &ref;
+    int pos;
+    reference(uint64_t &ref, int pos) : ref(ref), pos(pos) {}
+    operator bool() const { return (ref >> pos) & 1ULL; }
+    reference& operator=(bool val) {
+      if (val) ref |= (1ULL << pos);
+      else ref &= ~(1ULL << pos);
+      return *this;
+    }
+    reference& flip() {
+      ref ^= (1ULL << pos);
+      return *this;
+    }
+  };
+
+  reference operator[](int idx) {
+    return reference(bits[idx / 64], idx % 64);
+  }
+  bool operator[](int idx) const {
+    return (bits[idx / 64] >> (idx % 64)) & 1ULL;
+  }
+
+  void set() { for (auto &x : bits) x = ~0ULL; trim(); }
+  void set(int pos) { bits[pos / 64] |= (1ULL << (pos % 64)); }
+
+  void reset() { for (auto &x : bits) x = 0; }
+  void reset(int pos) { bits[pos / 64] &= ~(1ULL << (pos % 64)); }
+
+  void flip() { for (auto &x : bits) x = ~x; trim(); }
+  void flip(int pos) { bits[pos / 64] ^= (1ULL << (pos % 64)); }
+
+  bool test(int pos) const { return (*this)[pos]; }
+  bool any() const { for (auto x : bits) if (x) return true; return false; }
+  bool none() const { return !any(); }
+  bool all() const {
+    for (int i = 0; i < (int)bits.size(); i++) {
+      uint64_t mask = ~0ULL;
+      if (i == (int)bits.size() - 1 && n % 64) {
+        mask = (1ULL << (n % 64)) - 1;
+      }
+      if ((bits[i] & mask) != mask) return false;
+    }
+    return true;
+  }
+  int count() const {
+    int c = 0;
+    for (auto x : bits) c += __builtin_popcountll(x);
+    return c;
+  }
+  int size() const { return n; }
+
+  DynBits operator&(const DynBits &other) const {
+    DynBits res(n);
+    for (int i = 0; i < (int)bits.size(); i++) res.bits[i] = bits[i] & other.bits[i];
+    return res;
+  }
+  DynBits operator|(const DynBits &other) const {
+    DynBits res(n);
+    for (int i = 0; i < (int)bits.size(); i++) res.bits[i] = bits[i] | other.bits[i];
+    return res;
+  }
+  DynBits operator^(const DynBits &other) const {
+    DynBits res(n);
+    for (int i = 0; i < (int)bits.size(); i++) res.bits[i] = bits[i] ^ other.bits[i];
+    return res;
+  }
+  DynBits operator~() const {
+    DynBits res(n);
+    for (int i = 0; i < (int)bits.size(); i++) res.bits[i] = ~bits[i];
+    res.trim();
+    return res;
+  }
+
+  DynBits& operator&=(const DynBits &other) {
+    for (int i = 0; i < (int)bits.size(); i++) bits[i] &= other.bits[i];
+    return *this;
+  }
+  DynBits& operator|=(const DynBits &other) {
+    for (int i = 0; i < (int)bits.size(); i++) bits[i] |= other.bits[i];
+    return *this;
+  }
+  DynBits& operator^=(const DynBits &other) {
+    for (int i = 0; i < (int)bits.size(); i++) bits[i] ^= other.bits[i];
+    return *this;
+  }
+
+  DynBits operator<<(int k) const {
+    DynBits res(n);
+    int word = k / 64, offset = k % 64;
+    for (int i = (int)bits.size() - 1; i >= 0; i--) {
+      if (i - word < 0) continue;
+      res.bits[i] |= bits[i - word] << offset;
+      if (offset && i - word - 1 >= 0)
+        res.bits[i] |= bits[i - word - 1] >> (64 - offset);
+    }
+    res.trim();
+    return res;
+  }
+  DynBits operator>>(int k) const {
+    DynBits res(n);
+    int word = k / 64, offset = k % 64;
+    for (int i = 0; i < (int)bits.size(); i++) {
+      if (i + word >= (int)bits.size()) continue;
+      res.bits[i] |= bits[i + word] >> offset;
+      if (offset && i + word + 1 < (int)bits.size())
+        res.bits[i] |= bits[i + word + 1] << (64 - offset);
+    }
+    res.trim();
+    return res;
+  }
+
+  DynBits& operator<<=(int k) { return *this = (*this << k); }
+  DynBits& operator>>=(int k) { return *this = (*this >> k); }
+
+  string to_string() const {
+    string s;
+    for (int i = n - 1; i >= 0; i--) s.push_back(test(i) ? '1' : '0');
+    return s;
+  }
+
+private:
+  void trim() {
+    if (n % 64) {
+      bits.back() &= (1ULL << (n % 64)) - 1;
+    }
+  }
+};
+
 
 ]]></content>
 	<tabTrigger>DYNAMIC_BITSET</tabTrigger>
