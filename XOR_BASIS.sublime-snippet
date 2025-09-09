@@ -1,0 +1,60 @@
+<snippet>
+	<content><![CDATA[
+
+const int LG = 62;
+struct Basis{
+  int basis[LG + 1], sz = 0;
+  void insert(int x){
+    for(int i = LG; i >= 0; i--){
+      if(!(x & (1ll << i)))continue;
+      if(!basis[i]){
+        basis[i] = x;
+        sz++; return;
+      }
+      x ^= basis[i];
+    }
+  }
+
+  bool can(int x){
+    for(int i = LG; i >= 0; i--){
+      x = min(x, x ^ basis[i]);
+    }
+    return x == 0;
+  }
+
+  int Max(int ans = 0){
+    for(int i = LG; i >= 0; i--){
+      ans = max(ans, ans ^ basis[i]);
+    }
+    return ans;
+  }
+
+  int kthLarge(int k){
+    if((1ll << sz) < k)return -1;
+    int x = 0, n = sz;
+    for(int i = LG; i >= 0; i--){
+      if(!basis[i])continue;
+      int b = 1ll << i; n--;
+      int rem = 1ll << n;
+      if(rem > k){
+        ((x & b) == 0) and (x ^= basis[i]);
+      }else{
+        ((x & b)) and (x ^= basis[i]);
+        k -= rem;
+      }
+    }
+    return x;
+  }
+
+  int kthSmall(int k){
+    return kthLarge((1ll << sz) - k);
+  }
+
+} xo;
+
+
+]]></content>
+	<tabTrigger>XOR_BASIS</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
