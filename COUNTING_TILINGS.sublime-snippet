@@ -1,0 +1,44 @@
+<snippet>
+	<content><![CDATA[
+
+
+/*
+  Fill n x m rectangle with 1 x 2 tiles
+  n = rows, m = columns
+*/
+
+int n, m; 
+
+void genMask(int mask, int nmask, int i, vector<int> &v){
+  if(i == n){v.push_back(nmask); return;}
+  if(mask & (1 << i)){ 
+    genMask(mask, nmask, i + 1, v);
+    return;
+  }
+  if(i < (n - 1) and !(mask & (1 << (i + 1)))){
+    genMask(mask, nmask, i + 2, v);
+  }
+  genMask(mask, nmask | (1 << i), i + 1, v);
+}
+
+mint solve(){
+  cin >> n >> m;
+  mint dp[m + 1][1 << n];
+  dp[0][0] = 1;
+  for(int i = 1; i <= m; i++){
+    for(int j = 0; j < (1 << n); j++){
+      vector<int> masks;
+      genMask(j, 0, 0, masks);
+      for(auto k : masks){
+        dp[i][j] += dp[i - 1][k];
+      }
+    }
+  }
+  return dp[m][0];
+}
+
+]]></content>
+	<tabTrigger>COUNTING_TILINGS</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+

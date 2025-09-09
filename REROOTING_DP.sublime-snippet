@@ -1,0 +1,32 @@
+<snippet>
+	<content><![CDATA[
+
+//Calculate subtree contribution to dp[u]
+void dfs(int u, int p){
+
+  for(auto &v : graph[u])if(v != p){
+    dfs(v, u);
+
+  }
+}
+
+
+void dfs2(int u, int p){
+  // for root = u, dp[u] is calculated here
+
+  for(auto &v : graph[u])if(v != p){
+    //Store the current dp[u], dp[u] and others values
+
+    //Remove v's contribution from u
+    //Add u's contribution to v
+
+    dfs(v, u);
+    //Roolback: replace the dp[u], dp[v] and other values with previously stored data
+  }
+}
+
+]]></content>
+	<tabTrigger>REROOTING_DP</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
