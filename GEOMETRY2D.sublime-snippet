@@ -1,0 +1,24 @@
+<snippet>
+	<content><![CDATA[
+
+double dot(point a, point b){
+  return a.x * b.x + a.y * b.y;
+}
+
+double cross(point a, point b){
+  return a.x * b.y + a.y * b.x;
+}
+
+double angle(point a, point b){ //cosθ = A.B / (|A|*|B|)
+  return dot(a, b) / a.norm() / b.norm();
+}
+
+double proj(point a, point b){ // |A|cosθ
+  return dot(a, b) / b.norm();
+}
+
+]]></content>
+	<tabTrigger>GEOMETRY2D</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
