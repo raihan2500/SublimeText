@@ -1,0 +1,24 @@
+<snippet>
+	<content><![CDATA[
+int vis[N];
+struct Mex{
+    int mex = 0;
+    vin v;
+    void insert(int x){
+        if(x >= N)return;
+        v.push_back(x);
+        vis[x]++;
+        while(vis[mex])mex++;
+    }
+    void clear(){
+        for(auto &i : v)vis[i] = 0;
+        mex = 0;
+        v.clear();
+    }
+};
+
+]]></content>
+	<tabTrigger>MEX_STRUCT</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
