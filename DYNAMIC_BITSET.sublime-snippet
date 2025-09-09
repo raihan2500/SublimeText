@@ -1,5 +1,6 @@
 <snippet>
 	<content><![CDATA[
+
 template<typename BlockType = uint64_t>
 struct DynBits {
   int n;
@@ -117,6 +118,10 @@ struct DynBits {
     string s;
     for (int i = n-1; i >=0; i--) s.push_back(test(i)?'1':'0');
     return s;
+  }
+
+  friend std::ostream& operator << (std::ostream &os, const DynBits &x){
+    return os << x.to_string();
   }
 
 private:
