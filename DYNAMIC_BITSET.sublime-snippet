@@ -1,76 +1,72 @@
 <snippet>
 	<content><![CDATA[
+template<typename BlockType = uint64_t>
 struct DynBits {
   int n;
-  vector<uint64_t> bits;
+  vector<BlockType> bits;
 
   DynBits(int n = 0) : n(n) {
-    bits.assign((n + 63) / 64, 0);
+    bits.assign((n + (sizeof(BlockType)*8 - 1)) / (sizeof(BlockType)*8), 0);
   }
 
   struct reference {
-    uint64_t &ref;
+    BlockType &ref;
     int pos;
-    reference(uint64_t &ref, int pos) : ref(ref), pos(pos) {}
+    reference(BlockType &ref, int pos) : ref(ref), pos(pos) {}
     operator bool() const { return (ref >> pos) & 1ULL; }
     reference& operator=(bool val) {
-      if (val) ref |= (1ULL << pos);
-      else ref &= ~(1ULL << pos);
+      if (val) ref |= (BlockType(1) << pos);
+      else ref &= ~(BlockType(1) << pos);
       return *this;
     }
     reference& flip() {
-      ref ^= (1ULL << pos);
+      ref ^= (BlockType(1) << pos);
       return *this;
     }
   };
 
-  reference operator[](int idx) {
-    return reference(bits[idx / 64], idx % 64);
-  }
-  bool operator[](int idx) const {
-    return (bits[idx / 64] >> (idx % 64)) & 1ULL;
-  }
+  reference operator[](int idx) { return reference(bits[idx / (sizeof(BlockType)*8)], idx % (sizeof(BlockType)*8)); }
+  bool operator[](int idx) const { return (bits[idx / (sizeof(BlockType)*8)] >> (idx % (sizeof(BlockType)*8))) & 1ULL; }
 
-  void set() { for (auto &x : bits) x = ~0ULL; trim(); }
-  void set(int pos) { bits[pos / 64] |= (1ULL << (pos % 64)); }
+  void set() { for (auto &x : bits) x = ~BlockType(0); trim(); }
+  void set(int pos) { bits[pos / (sizeof(BlockType)*8)] |= (BlockType(1) << (pos % (sizeof(BlockType)*8))); }
 
   void reset() { for (auto &x : bits) x = 0; }
-  void reset(int pos) { bits[pos / 64] &= ~(1ULL << (pos % 64)); }
+  void reset(int pos) { bits[pos / (sizeof(BlockType)*8)] &= ~(BlockType(1) << (pos % (sizeof(BlockType)*8))); }
 
   void flip() { for (auto &x : bits) x = ~x; trim(); }
-  void flip(int pos) { bits[pos / 64] ^= (1ULL << (pos % 64)); }
+  void flip(int pos) { bits[pos / (sizeof(BlockType)*8)] ^= (BlockType(1) << (pos % (sizeof(BlockType)*8))); }
 
   bool test(int pos) const { return (*this)[pos]; }
   bool any() const { for (auto x : bits) if (x) return true; return false; }
   bool none() const { return !any(); }
   bool All() const {
-    for (int i = 0; i < (int)bits.size(); i++) {
-      uint64_t mask = ~0ULL;
-      if (i == (int)bits.size() - 1 && n % 64) {
-        mask = (1ULL << (n % 64)) - 1;
-      }
+    int sz = bits.size();
+    for (int i = 0; i < sz; i++) {
+      BlockType mask = ~BlockType(0);
+      if (i == sz-1 && n % (sizeof(BlockType)*8)) mask = (BlockType(1) << (n % (sizeof(BlockType)*8)))-1;
       if ((bits[i] & mask) != mask) return false;
     }
     return true;
   }
   int count() const {
     int c = 0;
-    for (auto x : bits) c += __builtin_popcountll(x);
+    for (auto x : bits) c += __builtin_popcountll(uint64_t(x & 0xFFFFFFFFFFFFFFFFULL)) + __builtin_popcountll(uint64_t(x >> 64));
     return c;
   }
   int size() const { return n; }
 
-  DynBits operator&(const DynBits &other) const {
+  DynBits operator&(const DynBits &other) const { 
     DynBits res(n);
     for (int i = 0; i < (int)bits.size(); i++) res.bits[i] = bits[i] & other.bits[i];
     return res;
   }
-  DynBits operator|(const DynBits &other) const {
+  DynBits operator|(const DynBits &other) const { 
     DynBits res(n);
     for (int i = 0; i < (int)bits.size(); i++) res.bits[i] = bits[i] | other.bits[i];
     return res;
   }
-  DynBits operator^(const DynBits &other) const {
+  DynBits operator^(const DynBits &other) const { 
     DynBits res(n);
     for (int i = 0; i < (int)bits.size(); i++) res.bits[i] = bits[i] ^ other.bits[i];
     return res;
@@ -82,39 +78,33 @@ struct DynBits {
     return res;
   }
 
-  DynBits& operator&=(const DynBits &other) {
-    for (int i = 0; i < (int)bits.size(); i++) bits[i] &= other.bits[i];
-    return *this;
-  }
-  DynBits& operator|=(const DynBits &other) {
-    for (int i = 0; i < (int)bits.size(); i++) bits[i] |= other.bits[i];
-    return *this;
-  }
-  DynBits& operator^=(const DynBits &other) {
-    for (int i = 0; i < (int)bits.size(); i++) bits[i] ^= other.bits[i];
-    return *this;
-  }
+  DynBits& operator&=(const DynBits &other) { for(int i=0;i<(int)bits.size();i++) bits[i]&=other.bits[i]; return *this; }
+  DynBits& operator|=(const DynBits &other) { for(int i=0;i<(int)bits.size();i++) bits[i]|=other.bits[i]; return *this; }
+  DynBits& operator^=(const DynBits &other) { for(int i=0;i<(int)bits.size();i++) bits[i]^=other.bits[i]; return *this; }
 
   DynBits operator<<(int k) const {
     DynBits res(n);
-    int word = k / 64, offset = k % 64;
-    for (int i = (int)bits.size() - 1; i >= 0; i--) {
-      if (i - word < 0) continue;
-      res.bits[i] |= bits[i - word] << offset;
-      if (offset && i - word - 1 >= 0)
-        res.bits[i] |= bits[i - word - 1] >> (64 - offset);
+    int W = sizeof(BlockType)*8;
+    int word = k / W, offset = k % W;
+    int sz = bits.size();
+    for (int i = sz-1; i >= 0; i--) {
+      if (i-word < 0) continue;
+      res.bits[i] |= bits[i-word] << offset;
+      if (offset && i-word-1 >= 0) res.bits[i] |= bits[i-word-1] >> (W-offset);
     }
     res.trim();
     return res;
   }
+
   DynBits operator>>(int k) const {
     DynBits res(n);
-    int word = k / 64, offset = k % 64;
-    for (int i = 0; i < (int)bits.size(); i++) {
-      if (i + word >= (int)bits.size()) continue;
-      res.bits[i] |= bits[i + word] >> offset;
-      if (offset && i + word + 1 < (int)bits.size())
-        res.bits[i] |= bits[i + word + 1] << (64 - offset);
+    int W = sizeof(BlockType)*8;
+    int word = k / W, offset = k % W;
+    int sz = bits.size();
+    for (int i = 0; i < sz; i++) {
+      if (i+word >= sz) continue;
+      res.bits[i] |= bits[i+word] >> offset;
+      if (offset && i+word+1 < sz) res.bits[i] |= bits[i+word+1] << (W-offset);
     }
     res.trim();
     return res;
@@ -125,18 +115,16 @@ struct DynBits {
 
   string to_string() const {
     string s;
-    for (int i = n - 1; i >= 0; i--) s.push_back(test(i) ? '1' : '0');
+    for (int i = n-1; i >=0; i--) s.push_back(test(i)?'1':'0');
     return s;
   }
 
 private:
   void trim() {
-    if (n % 64) {
-      bits.back() &= (1ULL << (n % 64)) - 1;
-    }
+    int W = sizeof(BlockType)*8;
+    if (n % W) bits.back() &= (BlockType(1) << (n % W)) - 1;
   }
 };
-
 
 ]]></content>
 	<tabTrigger>DYNAMIC_BITSET</tabTrigger>
