@@ -1,0 +1,65 @@
+<snippet>
+	<content><![CDATA[
+
+const double eps = 1e-9;
+
+int flag = 1;
+vector<double> gauss(vector<vector<double>> a){
+  int n = a.size();
+  int m = a[0].size() - 1;
+  flag = 1; //unique solution
+  vector<int> pos(m, -1);
+
+  for(int i = 0, r = 0; i < m and r < n; i++){
+    int p = r;
+    for(int j = r; j < n; j++){
+      if(fabs(a[j][i]) > fabs(a[p][i])){
+        p = j;
+      }
+    }
+    if(fabs(a[p][i]) < eps)continue;
+    swap(a[p], a[r]);
+    pos[i] = r;
+
+    double div = a[r][i];
+    for(int k = i; k <= m; k++){
+      a[r][k] /= div;
+    }
+
+    for(int j = r + 1; j < n; j++){
+      double sub = a[j][i];
+      if(fabs(sub) < eps)continue;
+      for(int k = i; k <= m; k++){
+        a[j][k] -= sub * a[r][k];
+      }
+    }
+    r++;
+  }
+
+  vector<double> ans(m, 0);
+  for(int i = m - 1; i >= 0; i--){
+    if(pos[i] == -1)flag = 2;
+    ans[i] = a[i][m];
+    for(int j = i + 1; j < m; j++){
+      ans[i] -= a[i][j] * ans[j];
+    }
+  }
+  if(flag == 2)return ans;
+
+  for(int i = 0; i < n; i++){
+    double sum = -a[i][m];
+    for(int j = 0; j < m; j++)sum += a[i][j] * ans[j];
+    if(fabs(sum) > eps){
+      flag = -1;  //LHS != RHS; NO solution exists
+      return {};
+    }
+  }
+
+  return ans;
+}
+
+]]></content>
+	<tabTrigger>GAUSSIAN_ELIMINATION</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
