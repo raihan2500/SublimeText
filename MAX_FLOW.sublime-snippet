@@ -75,6 +75,7 @@ int maxFlow(int s, int t){
   return res;
 }
 
+
 ]]></content>
 	<tabTrigger>MAX_FLOW</tabTrigger>
 	<scope>source.c++</scope>
