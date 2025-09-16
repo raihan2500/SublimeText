@@ -68,8 +68,6 @@ int32_t main(){
   return 0;
 }
 
-
-
 ]]></content>
 	<tabTrigger>cpp_snippet</tabTrigger>
 	<scope>source.c++</scope>
