@@ -4,7 +4,7 @@
 using namespace std;
 
 using ll = int64_t;
-using u64 = uint64_t;
+using ull = uint64_t;
 //using u128 = __uint128_t;
 
 #define int                 long long
@@ -67,6 +67,7 @@ int32_t main(){
   }
   return 0;
 }
+
 
 ]]></content>
 	<tabTrigger>cpp_snippet</tabTrigger>
