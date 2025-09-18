@@ -1,6 +1,5 @@
 <snippet>
 	<content><![CDATA[
-
 struct Mat{
   int n, m;
   vector<vector<int>> v;
@@ -72,6 +71,16 @@ struct Mat{
   inline Mat& operator ^= (const int& k){return *this = (*this ^ k);}
   inline bool operator == (const Mat& b){return v == b.v;}
   inline bool operator != (const Mat& b){return v != b.v;}
+
+  friend std::ostream& operator <<(std::ostream &os, const Mat& a){
+    for(int i = 0; i < a.v.size(); i++){
+      for(int j = 0; j < a.v[0].size(); j++){
+        os << a.v[i][j] << " ";
+      }
+      os << "\n";
+    }
+    return os;
+  }
 };
 
 ]]></content>
