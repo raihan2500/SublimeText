@@ -9,7 +9,6 @@ struct Mat{
     n = v.size();
     n ? m = v[0].size() : 0;
   }
-
   inline void make_unit(){
     assert(n == m);
     for(int i = 0; i < n; i++){
@@ -18,7 +17,6 @@ struct Mat{
       }
     }
   }
-
   inline Mat operator + (const Mat &b){
     assert(n == b.n and m == b.m);
     Mat ans = Mat(n, m);
@@ -29,7 +27,6 @@ struct Mat{
     }
     return ans;
   }
-
   inline Mat operator - (const Mat &b){
     assert(n == b.n and m == b.m);
     Mat ans = Mat(n, m);
@@ -40,7 +37,6 @@ struct Mat{
     }
     return ans;
   }
-
   inline Mat operator * (const Mat &b){
     assert(m == b.n);
     Mat ans = Mat(n, b.m);
@@ -53,7 +49,6 @@ struct Mat{
     }
     return ans;
   }
-
   inline Mat operator ^ (int k){
     assert(n == m);
     Mat ans(n, n), t = *this; ans.make_unit();
@@ -82,6 +77,7 @@ struct Mat{
     return os;
   }
 };
+
 
 ]]></content>
 	<tabTrigger>MATRIX</tabTrigger>
