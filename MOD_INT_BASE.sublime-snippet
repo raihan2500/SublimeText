@@ -3,7 +3,7 @@
 
 struct mint{
     int32_t x;
-    inline mint(int xx = 0) : x(xx % M){(x < 0) && (x += M);}
+    inline mint(int xx = 0) : x(xx % M){}
     inline mint & operator = (int n){return x = n, *this;}
     inline mint & operator += (mint a){return (x += a.x) >= M && (x -= M), *this;}
     inline mint & operator -= (mint a){return (x -= a.x) < 0 && (x += M), *this;}
@@ -45,6 +45,8 @@ struct mint{
         return a.x = y, is;        
     }
 };
+
+
 
 ]]></content>
 	<tabTrigger>MOD_INT_BASE</tabTrigger>
