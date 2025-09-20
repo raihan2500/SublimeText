@@ -1,0 +1,41 @@
+<snippet>
+	<content><![CDATA[
+
+void dijkstra(){
+  int n, m;
+  cin >> n >> m;
+  vector<pair<int, int>> graph[n + 1];
+  vector<int> dist(n + 1, 1e18);
+
+  for(int i = 0; i < m; i++){
+    int x, y, w;
+    cin >> x >> y >> w;
+    graph[x].push_back({y, w});
+    graph[y].push_back({x, w});
+  }
+
+  int u = 1;
+  dist[u] = 0;
+  set<pair<int, int>> s;
+  s.insert({0, u});
+
+  while(!s.empty()){
+    auto [w, u] = *s.begin();
+    s.erase(s.begin());
+    if(dist[u] < w)continue;
+
+    for(auto &[v, ww] : graph[u]){
+      if((w + ww) < dist[v]){
+        dist[v] = w + ww;
+        s.insert({dist[v], v});
+      }
+    }
+  }
+
+}
+
+]]></content>
+	<tabTrigger>DIJKSTRA</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
