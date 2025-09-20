@@ -1,0 +1,61 @@
+<snippet>
+	<content><![CDATA[
+
+
+int flag = 1;
+vector<mint> gauss(vector<vector<mint>> a){
+  int n = a.size();
+  int m = a[0].size() - 1;
+  flag = 1;
+  vector<int> pos(m, -1);
+  
+  for(int i = 0, r = 0; i < m and r < n; i++){
+    int p = r;
+    for(int j = r; j < n; j++){
+      if(a[j][i] != 0){
+        p = j; break;
+      }
+    }
+    if(a[p][i] == 0)continue;
+    swap(a[p], a[r]);
+    pos[i] = r;
+
+    mint div = a[r][i];
+    for(int k = i; k <= m; k++)a[r][k] /= div;
+
+    for(int j = r + 1; j < n ; j++){
+      mint sub = a[j][i];
+      if(sub == 0)continue;
+      for(int k = i; k <= m; k++){
+        a[j][k] -= sub * a[r][k];
+      }
+    }
+    r++;
+  }
+  vector<mint> ans(m, 0);
+  for(int i = m - 1; i >= 0; i--){
+    if(pos[i] == -1){flag = 2; continue;}
+    ans[i] = a[pos[i]][m];
+    for(int j = i + 1; j < m; j++){
+      ans[i] -= a[pos[i]][j] * ans[j];
+    }
+  }
+  if(flag == 2)return ans;
+
+  for(int i = 0; i < n; i++){
+    mint sum(-a[i][m].x);
+    for(int j = 0; j < m; j++)sum += a[i][j] * ans[j];
+    if(sum != 0){
+      flag = -1;
+      return {};
+    }
+  }
+  return ans;
+}
+
+
+]]></content>
+	<tabTrigger>GAUSSIAN_ELIMINATION_MOD</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
