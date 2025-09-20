@@ -1,5 +1,6 @@
 <snippet>
 	<content><![CDATA[
+
 struct Mat{
   int n, m;
   vector<vector<int>> v;
@@ -58,6 +59,23 @@ struct Mat{
       k >>= 1;
     }
     return ans;
+  }
+  inline pair<Mat, Mat> geo_sum(int k){
+    if(k == 1){
+      Mat R(n, n); R.make_unit();
+      return {*this, R};
+    }
+    if(k & 1){ //Sk = S(k - 1) + T^(k - 1)
+      auto [A, S] = geo_sum(k - 1);
+      S += A;
+      A *= (*this);
+      return {A, S};
+    }else{ //Sk = S(k/2) + (T ^(k/2))*S(k / 2)
+      auto [A, S] = geo_sum(k / 2);
+      S += S * A;
+      A *= A;
+      return {A, S};
+    }
   }
 
   inline Mat& operator += (const Mat& b){return *this = (*this + b);}
