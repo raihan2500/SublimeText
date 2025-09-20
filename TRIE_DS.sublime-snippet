@@ -1,32 +1,34 @@
 <snippet>
 	<content><![CDATA[
+
 struct Trie{
-    struct node{
-        bool end = false;
-        node* next[26] = {nullptr};
-    };
-    node* root = new node();
+  struct node{
+    bool end = false;
+    node* next[26] = {NULL};
+  };
+  node* root = new node();
 
-    void insert(string str){
-        int i = 0;
-        node* it = root;
-
-        while(i < str.size()){
-            if(it->next[str[i] - 'a'] == nullptr)it->next[str[i] - 'a'] = new node();
-            it = it->next[str[i++] - 'a'];
-        }
-        it->end = true;
+  void insert(string str){
+    int i = 0;
+    node* it = root;
+    while(i < str.size()){
+      int c = str[i++] - 'a';
+      if(it->next[c] == NULL)it->next[c] = new node();
+      it = it->next[c];
     }
+    it->end = true;
+  }
 
-    bool search(string str){
-        int i = 0;
-        node* it = root;
-        while(i < str.size()){
-            if(it->next[str[i] - 'a'] == nullptr)return false;
-            it = it->next[str[i++] - 'a'];
-        }
-        return it->end;
+  bool find(string str){
+    int i = 0;
+    node* it = root;
+    while(i < str.size()){
+      int c = str[i++] - 'a';
+      if(it->next[c] == NULL)return false;
+      it = it->next[c];
     }
+    return it->end;
+  }
 };
 
 ]]></content>
