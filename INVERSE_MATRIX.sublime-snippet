@@ -5,7 +5,7 @@ int flag = 1;
 vector<vector<mint>> Inverse(vector<vector<mint>> a){
   int n = a.size(); 
   vector<int> col(n); flag = 1;
-  vector<vector<mint>> ans(n, vector<mint>(n));
+  vector<vector<mint>> ans(n, vector<mint>(n)), res = ans;
   for(int i = 0; i < n; i++)ans[i][i] = 1, col[i] = i;
 
   for(int i = 0; i < n; i++){
@@ -28,13 +28,17 @@ vector<vector<mint>> Inverse(vector<vector<mint>> a){
     swap(col[i], col[c]);
 
     mint div = 1 /a[i][i];
-    for(int j = 0; j < n; j++)a[i][j] *= div;
-    for(int j = 0; j < n; j++)ans[i][j] *= div;
+    for(int j = 0; j < n; j++){
+      a[i][j] *= div;
+      ans[i][j] *= div;
+    }
 
     for(int j = i + 1; j < n; j++){
       mint f = a[j][i];
-      for(int k = 0; k < n; k++)a[j][k] -= f * a[i][k];
-      for(int k = 0; k < n; k++)ans[j][k] -= f * ans[i][k];
+      for(int k = 0; k < n; k++){
+        a[j][k] -= f * a[i][k];
+        ans[j][k] -= f * ans[i][k];
+      }
     }
   }
   for(int i = n - 1; i > 0; i--){
@@ -45,9 +49,13 @@ vector<vector<mint>> Inverse(vector<vector<mint>> a){
       }
     }
   }
-  return ans;
+  for(int i = 0; i < n; i++){
+    for(int j = 0; j < n; j++){
+      res[col[i]][col[j]] = ans[i][j];
+    }
+  }
+  return res;
 }
-
 
 ]]></content>
 	<tabTrigger>INVERSE_MATRIX</tabTrigger>
