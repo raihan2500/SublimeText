@@ -1,22 +1,15 @@
 <snippet>
 	<content><![CDATA[
 
+using T = mint;
 struct Mat{
   int n, m;
-  vector<vector<int>> v;
+  vector<vector<T>> v;
   Mat(){}
-  Mat(int n, int m) : n(n), m(m){v.assign(n, vector<int>(m, 0));}
-  Mat(vector<vector<int>> v) : v(v){
+  Mat(int n, int m) : n(n), m(m){v.assign(n, vector<T>(m, 0));}
+  Mat(vector<vector<T>> v) : v(v){
     n = v.size();
     n ? m = v[0].size() : 0;
-  }
-  inline void make_unit(){
-    assert(n == m);
-    for(int i = 0; i < n; i++){
-      for(int j = 0; j < n; j++){
-        v[i][j] = (i == j);
-      }
-    }
   }
   inline Mat operator + (const Mat &b){
     assert(n == b.n and m == b.m);
@@ -60,6 +53,70 @@ struct Mat{
     }
     return ans;
   }
+  inline Mat& operator += (const Mat& b){return *this = (*this + b);}
+  inline Mat& operator -= (const Mat& b){return *this = (*this - b);}
+  inline Mat& operator *= (const Mat& b){return *this = (*this * b);}
+  inline Mat& operator ^= (const int& k){return *this = (*this ^ k);}
+  inline bool operator == (const Mat& b){return v == b.v;}
+  inline bool operator != (const Mat& b){return v != b.v;}
+
+  inline void make_unit(){
+    assert(n == m);
+    for(int i = 0; i < n; i++){
+      for(int j = 0; j < n; j++){
+        v[i][j] = (i == j);
+      }
+    }
+  }
+
+  int flag = 1;
+  inline Mat Inverse(){
+    auto &a = v;
+    int n = a.size(); 
+    vector<int> col(n); flag = 1;
+    vector<vector<T>> ans(n, vector<T>(n));
+    for(int i = 0; i < n; i++)ans[i][i] = 1, col[i] = i;
+  
+    for(int i = 0; i < n; i++){
+      int r = i, c = i;
+      for(; r < n ; r++){
+        for(c = i; c < n; c++){
+          if(a[r][c] != 0){
+            goto found;
+          }
+        }
+      }
+      flag = 0;
+      return {};
+      found:
+      a[i].swap(a[r]); ans[i].swap(ans[r]);
+      for(int j = 0; j < n; j++){
+        swap(a[j][i], a[j][c]);
+        swap(ans[j][i], ans[j][c]);
+      }
+      swap(col[i], col[c]);
+  
+      T div = 1 /a[i][i];
+      for(int j = 0; j < n; j++)a[i][j] *= div;
+      for(int j = 0; j < n; j++)ans[i][j] *= div;
+  
+      for(int j = i + 1; j < n; j++){
+        T f = a[j][i];
+        for(int k = 0; k < n; k++)a[j][k] -= f * a[i][k];
+        for(int k = 0; k < n; k++)ans[j][k] -= f * ans[i][k];
+      }
+    }
+    for(int i = n - 1; i > 0; i--){
+      for(int j = 0; j < i; j++){
+        T f = a[j][i];
+        for(int k = 0; k < n; k++){
+          ans[j][k] -= ans[i][k] * f;
+        }
+      }
+    }
+    return ans;
+  }
+  
   inline pair<Mat, Mat> geo_sum(int k){
     if(k == 1){
       Mat R(n, n); R.make_unit();
@@ -78,13 +135,6 @@ struct Mat{
     }
   }
 
-  inline Mat& operator += (const Mat& b){return *this = (*this + b);}
-  inline Mat& operator -= (const Mat& b){return *this = (*this - b);}
-  inline Mat& operator *= (const Mat& b){return *this = (*this * b);}
-  inline Mat& operator ^= (const int& k){return *this = (*this ^ k);}
-  inline bool operator == (const Mat& b){return v == b.v;}
-  inline bool operator != (const Mat& b){return v != b.v;}
-
   friend std::ostream& operator <<(std::ostream &os, const Mat& a){
     for(int i = 0; i < a.v.size(); i++){
       for(int j = 0; j < a.v[0].size(); j++){
@@ -95,7 +145,6 @@ struct Mat{
     return os;
   }
 };
-
 
 ]]></content>
 	<tabTrigger>MATRIX</tabTrigger>
