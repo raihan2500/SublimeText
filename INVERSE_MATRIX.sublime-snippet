@@ -11,7 +11,7 @@ vector<vector<mint>> Inverse(vector<vector<mint>> a){
   for(int i = 0; i < n; i++){
     int r = i, c = i;
     for(; r < n ; r++){
-      for(; c < n; c++){
+      for(c = i; c < n; c++){
         if(a[r][c] != 0){
           goto found;
         }
@@ -47,6 +47,7 @@ vector<vector<mint>> Inverse(vector<vector<mint>> a){
   }
   return ans;
 }
+
 
 ]]></content>
 	<tabTrigger>INVERSE_MATRIX</tabTrigger>
