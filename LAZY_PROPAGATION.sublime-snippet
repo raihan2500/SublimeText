@@ -1,7 +1,6 @@
 <snippet>
 	<content><![CDATA[
 
-
 struct ST{
   #define lc  node << 1
   #define rc  node << 1 | 1
@@ -10,8 +9,8 @@ struct ST{
   vector<int> v, tree, lazy;
   ST(vector<int> v) : v(v){
   	n = v.size() - 1;
-    tree.assign(4 * N, 0);
-    lazy.assign(4 * N, 0);
+    tree.assign(4 * n, 0);
+    lazy.assign(4 * n, 0);
     build(1, 1, n);
   }
 
