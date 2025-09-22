@@ -1,72 +1,81 @@
 <snippet>
 	<content><![CDATA[
 
-int n, q, v[N];
 
 struct ST{
-    #define lc  2 * node
-    #define rc  2 * node + 1
+  #define lc  node << 1
+  #define rc  node << 1 | 1
+
+  int n;
+  vector<int> v, tree, lazy;
+  ST(vector<int> v) : v(v){
+  	n = v.size() - 1;
+    tree.assign(4 * N, 0);
+    lazy.assign(4 * N, 0);
+    build(1, 1, n);
+  }
+
+  inline void pull(int node){
+    tree[node] = tree[lc] + tree[rc]; /*********/
+  }
+  inline void push(int node, int lo, int hi){ /*************/
+    if(lazy[node] == 0)return;
     
-    vector<int> tree, lazy;
-    ST(int N = 2e5 + 10){
-        tree = lazy = vector<int>(4 * N);
-    }
+    int val = lazy[node]; 
+    tree[node] += (hi - lo + 1) * val;
+    lazy[node] = 0;
+    
+    if(lo == hi)return;
+    lazy[lc] = lazy[lc] + val;
+    lazy[rc] = lazy[rc] + val;
+  }
 
-    inline void pull(int node){
-        tree[node] = tree[lc] + tree[rc]; /*********/
+  void build(int node, int lo, int hi){
+    if(lo == hi){
+      tree[node] = v[lo];
+      return;
     }
-    inline void push(int node, int lo, int hi){ /*************/
-        if(lazy[node] == 0)return;
-        
-        int val = lazy[node]; 
-        tree[node] += (hi - lo + 1) * val;
-        lazy[node] = 0;
-        
-        if(lo == hi)return;
-        lazy[lc] = lazy[lc] + val;
-        lazy[rc] = lazy[rc] + val;
-    }
+    int mid = (lo + hi) >> 1;
+    build(lc, lo, mid);
+    build(rc, mid + 1, hi);
+    pull(node);
+  }
 
-    void build(int node, int lo, int hi){
-        if(lo == hi){
-            tree[node] = v[lo];
-            return;
-        }
-        int mid = (lo + hi) / 2;
-        build(lc, lo, mid);
-        build(rc, mid + 1, hi);
-        pull(node);
+  void update(int node, int lo, int hi, int l, int r, int val){
+    push(node, lo, hi);
+    if(r < lo or l > hi)return;
+    if(lo >= l and hi <= r){
+      lazy[node] += val;    /************/
+      push(node, lo, hi);
+      return;
     }
+    int mid = (lo + hi) >> 1;
+    update(lc, lo, mid, l, r, val);
+    update(rc, mid + 1, hi, l, r, val);
+    pull(node);
+  }
+  int query(int node, int lo, int hi, int l, int r){
+    push(node, lo, hi);
+    if(r < lo or l > hi)return 0;  /************/
+    if(lo >= l and hi <= r)return tree[node];
+    int mid = (lo + hi) >> 1;
+    int q1 = query(lc, lo, mid, l, r);
+    int q2 = query(rc, mid + 1, hi, l, r);
 
-    void update(int node, int lo, int hi, int l, int r, int val){
-        push(node, lo, hi);
-        if(r < lo or l > hi)return;
-        if(lo >= l and hi <= r){
-            lazy[node] += val;    /************/
-            push(node, lo, hi);
-            return;
-        }
-        int mid = (lo + hi) / 2;
-        update(lc, lo, mid, l, r, val);
-        update(rc, mid + 1, hi, l, r, val);
-        pull(node);
-    }
+    return q1 + q2; /********/
+  }
 
-    int query(int node, int lo, int hi, int l, int r){
-        push(node, lo, hi);
-        if(r < lo or l > hi)return 0;  /************/
-        if(lo >= l and hi <= r)return tree[node];
-        int mid = (lo + hi) / 2;
-        int q1 = query(lc, lo, mid, l, r);
-        int q2 = query(rc, mid + 1, hi, l, r);
+  void update(int l, int r, int val){
+  	update(1, 1, n, l, r, val);
+  }
+  int query(int l, int r){
+  	return query(1, 1, n, l, r);
+  }
+};
 
-        return q1 + q2; /********/
-    }
-} st;
 
 ]]></content>
-	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
 	<tabTrigger>LAZY_PROPAGATION</tabTrigger>
-	<!-- Optional: Set a scope to limit where the snippet will trigger -->
-	<!-- <scope>source.python</scope> -->
+	<scope>source.c++</scope>
 </snippet>
+
