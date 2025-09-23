@@ -1,0 +1,14 @@
+<snippet>
+	<content><![CDATA[
+struct cmp{
+  bool operator()(const auto &a, const auto &b) const{
+    if(a > b)return true;
+    return false;
+  }
+};    
+
+]]></content>
+	<tabTrigger>COMPARATOR_SET_SORT</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
