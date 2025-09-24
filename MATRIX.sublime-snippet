@@ -1,7 +1,7 @@
 <snippet>
 	<content><![CDATA[
 
-using T = mint;
+template<typename T = mint>
 struct Mat{
   int n, m;
   vector<vector<T>> v;
@@ -152,6 +152,7 @@ struct Mat{
     return os;
   }
 };
+
 
 ]]></content>
 	<tabTrigger>MATRIX</tabTrigger>
