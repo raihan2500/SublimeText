@@ -1,0 +1,24 @@
+<snippet>
+	<content><![CDATA[
+vector<int> primes, hp(N);
+vector<bool>isPrime(N, 1);
+
+void sieve(){
+  isPrime[0] = isPrime[1] = 0;
+  for(int i = 2; i < N; i++){
+    if(isPrime[i]){
+      hp[i] = i;
+      primes.push_back(i);
+      for(int j = i + i; j < N; j += i){
+        isPrime[j] = false;
+        hp[j] = i;
+      }
+    }
+  }
+}
+
+]]></content>
+	<tabTrigger>SIEVE_SIMPLE</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
