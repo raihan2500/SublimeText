@@ -1,0 +1,24 @@
+<snippet>
+	<content><![CDATA[
+
+int spf[N];
+vector<int> primes;
+
+void sieve(){
+  for(int i = 2; i < N; i++){
+    if(!spf[i]){
+      spf[i] = i;
+      primes.push_back(i);
+    }
+    for(auto &p : primes){
+      if(p > spf[i] or i * p >= N)break;
+      spf[i * p] = p;
+    }
+  }
+}
+
+]]></content>
+	<tabTrigger>LINEAR_SIEVE</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
