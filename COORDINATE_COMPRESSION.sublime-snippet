@@ -13,7 +13,11 @@ struct Compress{
   int size(){
     return v.size();
   }
+  int get_org(int x){
+    return v[--x];
+  }
 };
+
 
 
 ]]></content>
