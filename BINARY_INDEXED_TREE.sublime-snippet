@@ -1,28 +1,32 @@
 <snippet>
 	<content><![CDATA[
 
+template<typename T = int>
 struct BIT{
   int n;
-  vector<int> t;
+  vector<T> t;
   BIT(int n = 2e5) : n(n){
-    t.resize(n + 1);
+    t.resize(n + 2);
   }
 
-  int query(int i){
+  T query(int i){
     if(i < 0)return 0;
     int ans = 0;
     for(; i; i -= i & -i)ans += t[i];
     return ans;
   }
-  int query(int l, int r){
+  T query(int l, int r){
     return query(r) - query(l - 1);
   }
 
-  void update(int i, int val){
+  void update(int i, T val){
     for(; i <= n; i += i & -i)t[i] += val;
   }
+  void update(int l, int r, T val){
+    update(l, val);
+    update(r + 1, -val);
+  }
 };
-
 
 ]]></content>
 	<tabTrigger>BINARY_INDEXED_TREE</tabTrigger>
