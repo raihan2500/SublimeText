@@ -76,9 +76,8 @@ double polygon_area(vector<point> &v){
     point p2 = v[(i + 1) % n];
     ans += (p1.x*p2.y) - (p2.x*p1.y); 
   }
-  return ans / 2.0;
+  return abs(ans / 2.0);
 }
-
 
 
 ]]></content>
