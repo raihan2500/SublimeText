@@ -1,10 +1,10 @@
 <snippet>
 	<content><![CDATA[
 
-
 const double eps = 1e-9;
 const double PI = acos(-1.0);
 int sign(double x){return (x > eps) - (x < -eps);}
+
 struct point{
   double x, y;
   point(){x = 0, y = 0;}
@@ -77,6 +77,13 @@ double polygon_area(vector<point> &v){
     ans += (p1.x*p2.y) - (p2.x*p1.y); 
   }
   return abs(ans / 2.0);
+}
+
+/************ Lattice point on a line excluding endpoints *****************/
+int lattice_points_on_seg(point a, point b){
+  int dx = abs(b.x - a.x);
+  int dy = abs(b.y - a.y);
+  return __gcd(dx, dy) - 1;
 }
 
 
