@@ -8,6 +8,7 @@ using ull = uint64_t;
 //using u128 = __uint128_t;
 
 #define int                 long long
+#define double              long double
 
 #define endl                "\n"
 #define yes                 cout<<"YES\n"
@@ -50,8 +51,8 @@ const int M = 1e9 + 7;
 const int N = 2e5 + 100;
 
 void _(){
-	
-	
+    
+  
 }
 
 int32_t main(){
