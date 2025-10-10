@@ -20,7 +20,8 @@ using ull = uint64_t;
 #define vin                 vector<int>
 #define pr                  pair<int, int>
 #define pp                  pop_back()
-#define pb(n)               push_back(n)
+#define pb                  push_back
+#define epb                 emplace_back
 #define all(x)              x.begin(),x.end()
 #define ppfr(v)             v.erase(v.begin());
 #define sum_all(v)          accumulate(all(v), 0ll)
