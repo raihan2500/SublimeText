@@ -16,15 +16,17 @@ using ull = uint64_t;
 #define nl                  cout<<"\n"
 #define cnl                 clog<<"\n"
 
-#define lin(n)              int n;cin>>n;
 #define vin                 vector<int>
+#define lin(n)              int n;cin>>n;
 #define pr                  pair<int, int>
-#define pp                  pop_back()
 #define pb                  push_back
+#define pp                  pop_back()
 #define epb                 emplace_back
 #define all(x)              x.begin(),x.end()
 #define ppfr(v)             v.erase(v.begin());
 #define sum_all(v)          accumulate(all(v), 0ll)
+#define MAX_E               *max_element
+#define MIN_E               *min_element 
 
 #define forn(i,n)           for(int i = 0; i < n; i++)
 #define Forn(i,n)           for(int i = 1; i <= n; i++)
