@@ -27,7 +27,7 @@ struct ST{
     t[node] = pull(t[lc], t[rc]);
   }
 
-  inline T pull(T a, T b){
+  inline T pull(T a, T b){ //pull
     return a + b;
   }
   inline void push(int node, int lo, int hi){ //lazy
