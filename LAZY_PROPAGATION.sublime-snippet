@@ -1,27 +1,40 @@
 <snippet>
 	<content><![CDATA[
 
+template<typename T = int>
 struct ST{
   #define lc  node << 1
   #define rc  node << 1 | 1
 
   int n;
-  vector<int> v, tree, lazy;
+  vector<int> v;
+  vector<T> t, lazy;
   ST(vector<int> v) : v(v){
-  	n = v.size() - 1;
-    tree.assign(4 * n, 0);
+    n = v.size() - 1;
+    t.assign(4 * n, 0);
     lazy.assign(4 * n, 0);
     build(1, 1, n);
   }
 
-  inline void pull(int node){
-    tree[node] = tree[lc] + tree[rc]; /*********/
+  void build(int node, int lo, int hi){
+    if(lo == hi){
+      t[node] = v[lo];
+      return;
+    }
+    int mid = (lo + hi) >> 1;
+    build(lc, lo, mid);
+    build(rc, mid + 1, hi);
+    t[node] = pull(t[lc], t[rc]);
   }
-  inline void push(int node, int lo, int hi){ /*************/
+
+  inline T pull(T a, T b){
+    return a + b;
+  }
+  inline void push(int node, int lo, int hi){ //lazy
     if(lazy[node] == 0)return;
     
     int val = lazy[node]; 
-    tree[node] += (hi - lo + 1) * val;
+    t[node] += (hi - lo + 1) * val;
     lazy[node] = 0;
     
     if(lo == hi)return;
@@ -29,46 +42,35 @@ struct ST{
     lazy[rc] = lazy[rc] + val;
   }
 
-  void build(int node, int lo, int hi){
-    if(lo == hi){
-      tree[node] = v[lo];
-      return;
-    }
-    int mid = (lo + hi) >> 1;
-    build(lc, lo, mid);
-    build(rc, mid + 1, hi);
-    pull(node);
-  }
 
   void update(int node, int lo, int hi, int l, int r, int val){
     push(node, lo, hi);
     if(r < lo or l > hi)return;
     if(lo >= l and hi <= r){
-      lazy[node] += val;    /************/
+      lazy[node] += val;    //update
       push(node, lo, hi);
       return;
     }
     int mid = (lo + hi) >> 1;
     update(lc, lo, mid, l, r, val);
     update(rc, mid + 1, hi, l, r, val);
-    pull(node);
+    t[node] = pull(t[lc], t[rc]);
   }
-  int query(int node, int lo, int hi, int l, int r){
+  T query(int node, int lo, int hi, int l, int r){
     push(node, lo, hi);
-    if(r < lo or l > hi)return 0;  /************/
-    if(lo >= l and hi <= r)return tree[node];
+    if(r < lo or l > hi)return 0;  //return
+    if(lo >= l and hi <= r)return t[node];
     int mid = (lo + hi) >> 1;
-    int q1 = query(lc, lo, mid, l, r);
-    int q2 = query(rc, mid + 1, hi, l, r);
-
-    return q1 + q2; /********/
+    T q1 = query(lc, lo, mid, l, r);
+    T q2 = query(rc, mid + 1, hi, l, r);
+    return pull(q1, q2);
   }
 
   void update(int l, int r, int val){
-  	update(1, 1, n, l, r, val);
+    update(1, 1, n, l, r, val);
   }
-  int query(int l, int r){
-  	return query(1, 1, n, l, r);
+  T query(int l, int r){
+    return query(1, 1, n, l, r);
   }
 };
 
