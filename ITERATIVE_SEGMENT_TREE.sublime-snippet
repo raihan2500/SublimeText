@@ -1,18 +1,19 @@
 <snippet>
 	<content><![CDATA[
 
+const int RET = 0;
+inline int Pull(int a, int b){
+  return a + b;
+}
+
+template<typename T = int, T(*pull)(T, T) = Pull, T R = RET>
 struct ST{
   int n; 
   vector<int> v, t;
-
   ST(vector<int> v) : v(v){
     n = v.size() - 1; //1-based index
     t.resize(2 * n + 2);
     build();
-  }
-
-  inline int pull(int a, int b){
-    return a + b; //Sum query
   }
 
   void build(){
@@ -23,16 +24,14 @@ struct ST{
   }
 
   void update(int i, int val){
-    i += n;
-    t[i] = val;
+    i += n;  t[i] = val;
     for(i >>= 1; i >= 1; i >>= 1){
       t[i] = pull(t[i << 1], t[i << 1 | 1]);
     }
   }
-
   int query(int l, int r){
     l += n; r += n;
-    int ans = 0; //Sum query
+    int ans = R;
     for(; l <= r; l >>= 1, r >>= 1){
       if(l % 2 == 1)ans = pull(ans, t[l++]);
       if(r % 2 == 0)ans = pull(ans, t[r--]);
@@ -40,6 +39,7 @@ struct ST{
     return ans;
   }
 };
+
 
 ]]></content>
 	<tabTrigger>ITERATIVE_SEGMENT_TREE</tabTrigger>
