@@ -32,7 +32,7 @@ struct ST{
   void update(int node, int lo, int hi, int l, T val){
     if(lo > l or hi < l)return;
     if(lo == hi){
-      t[node] = v[lo] = val;
+      t[node] = v[lo] = val; //replace
       return;
     }
     int mid = (lo + hi) >> 1;
