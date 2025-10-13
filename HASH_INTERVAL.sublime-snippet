@@ -14,7 +14,7 @@ struct H {
   ull get() const { return x + !~x; }
   bool operator==(H o) const { return get() == o.get(); }
   bool operator<(H o) const { return get() < o.get(); }
-  friend std::ostream& operator << (std::ostream &os, H &h){ return os << h.x; }
+  friend std::ostream& operator << (std::ostream &os, const H &h){ return os << h.x; }
   friend std::istream& operator >> (std::istream &is, H &h){int x; cin >> x; return h.x = x, is;}
 };
 static const H C = (ll)rng(1e10,1e12); // (order ~ 3e9; random also ok)
