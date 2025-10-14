@@ -1,13 +1,13 @@
 <snippet>
 	<content><![CDATA[
 
-int spf[N];
+int spf[N]; bool isPrime[N];
 vector<int> primes;
 
 void sieve(){
   for(int i = 2; i < N; i++){
     if(!spf[i]){
-      spf[i] = i;
+      spf[i] = i; isPrime[i] = 1;
       primes.push_back(i);
     }
     for(auto &p : primes){
@@ -16,6 +16,7 @@ void sieve(){
     }
   }
 }
+
 
 ]]></content>
 	<tabTrigger>LINEAR_SIEVE</tabTrigger>
