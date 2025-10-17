@@ -40,6 +40,10 @@ int dist(int u, int v){
   return depth[u] + depth[v] - 2 * depth[lc];
 }
 
+bool onPath(int u, int v, int x){
+  return (dist(u, x) + dist(v, x)) == dist(u, v);
+}
+
 
 ]]></content>
 	<tabTrigger>LCA_BINARY_LIFTING</tabTrigger>
