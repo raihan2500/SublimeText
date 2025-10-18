@@ -22,7 +22,7 @@ struct SPT{
       }
     }
   }
-  int query(int l, int r){
+  T query(int l, int r){
     assert(l <= r);
     int j = 31 - __builtin_clz(r - l + 1);
     return pull(t[l][j], t[r - (1 << j) + 1][j]);
