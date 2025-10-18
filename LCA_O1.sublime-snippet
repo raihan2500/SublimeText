@@ -7,12 +7,13 @@ struct SPT{
   int n; 
   vector<T> v;
   vector<vector<T>> t;
-  SPT(){}
-  SPT(vector<T> v) : v(v){
+  SPT(){};
+  SPT(vector<T> &v) : v(v){
     n = v.size() - 1; //1 Based index
-    t.assign(n + 1, vector<T> (18));
+    t.assign(n + 1, vector<T> (32 - __builtin_clz(n)));
     build();
   }
+
   void build(){
     for(int i = 1; i <= n; i++)t[i][0] = v[i];
     for(int j = 1; (1 << j) <= n; j++){
@@ -22,7 +23,8 @@ struct SPT{
     }
   }
   T query(int l, int r){
-    T j = 31 - __builtin_clz(r - l + 1);
+    assert(l <= r);
+    int j = 31 - __builtin_clz(r - l + 1);
     return pull(t[l][j], t[r - (1 << j) + 1][j]);
   }
 };
