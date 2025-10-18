@@ -13,7 +13,6 @@ struct SPT{
     t.assign(n + 1, vector<T> (32 - __builtin_clz(n)));
     build();
   }
-
   void build(){
     for(int i = 1; i <= n; i++)t[i][0] = v[i];
     for(int j = 1; (1 << j) <= n; j++){
