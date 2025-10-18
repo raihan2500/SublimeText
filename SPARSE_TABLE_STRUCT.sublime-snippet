@@ -7,10 +7,10 @@ struct SPT{
   int n; 
   vector<T> v;
   vector<vector<T>> t;
-
-  SPT(vector<T> v) : v(v){
+  SPT(){};
+  SPT(vector<T> &v) : v(v){
     n = v.size() - 1; //1 Based index
-    t.assign(n + 1, vector<int> (18));
+    t.assign(n + 1, vector<T> (32 - __builtin_clz(n)));
     build();
   }
 
@@ -23,10 +23,12 @@ struct SPT{
     }
   }
   int query(int l, int r){
+    assert(l <= r);
     int j = 31 - __builtin_clz(r - l + 1);
     return pull(t[l][j], t[r - (1 << j) + 1][j]);
   }
 };
+
 
 ]]></content>
 	<tabTrigger>SPARSE_TABLE_STRUCT</tabTrigger>
