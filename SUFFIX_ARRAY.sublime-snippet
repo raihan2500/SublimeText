@@ -24,7 +24,7 @@ void counting_sort(vector<pair<pair<int,int>,int>> &v){
 }
 
 vector<int> suffix_array(string str){
-  str.push_back('$');
+  str.push_back('#');
   int n = str.size();
   vector<int> sa(n), c(n);
   vector<pair<pair<int, int>, int>> v(n);
