@@ -10,6 +10,25 @@ struct SuffixArray{
     build(str);
   };
 
+  int count(string pat){
+    int m = pat.size();
+    int lo = 0, hi = n - 2, lb;
+    while(hi > lo){
+      int mid = (hi + lo) >> 1;
+      if(str.compare(sa[mid], m, pat) < 0)lo = mid + 1;
+      else hi = mid;
+    }
+    if(str.compare(sa[lo], m, pat))return 0;
+    
+    lb = lo;  hi = n - 2;
+    while(hi > lo){
+      int mid = (hi + lo + 1) >> 1;
+      if(str.compare(sa[mid], m, pat) <= 0)lo = mid;
+      else hi = mid - 1;
+    }
+    return hi - lb + 1;
+  }
+
   void counting_sort(vector<pair<pair<int,int>,int>> &v){
     int n = v.size();
     int mx = 0;
