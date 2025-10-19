@@ -59,6 +59,7 @@ vector<int> suffix_array(string str){
   return sa;
 }
 
+
 ]]></content>
 	<tabTrigger>SUFFIX_ARRAY</tabTrigger>
 	<scope>source.c++</scope>
