@@ -1,0 +1,66 @@
+<snippet>
+	<content><![CDATA[
+
+void counting_sort(vector<pair<pair<int,int>,int>> &v){
+  int n = v.size();
+  int mx = 0;
+  for(int i = 0; i < n; i++)mx = max({mx, v[i].first.first, v[i].first.second});
+  vector<pair<pair<int,int>,int>> ans(n);
+  vector<int> cnt(mx+1);
+  for(int i = 0; i < n; i++) cnt[v[i].first.second]++;
+  for(int i = 1; i <= mx; i++) cnt[i]+=cnt[i-1];
+  for(int i = n - 1; i>=0; i--){
+    ans[--cnt[v[i].first.second]] = v[i];
+  }
+  v = ans;
+  fill(cnt.begin(), cnt.end(),0);
+
+  for(int i = 0; i < n; i++) cnt[v[i].first.first]++;
+  for(int i = 1; i <= mx; i++) cnt[i]+=cnt[i-1];
+  for(int i = n - 1; i>=0; i--){
+    ans[--cnt[v[i].first.first]] = v[i];
+  }
+  v = ans;
+}
+
+vector<int> suffix_array(string str){
+  str.push_back('$');
+  int n = str.size();
+  vector<int> sa(n), c(n);
+  vector<pair<pair<int, int>, int>> v(n);
+  
+  for(int i = 0; i < n; i++)v[i] = {{str[i], 0}, i};
+  counting_sort(v);
+  for(int i = 0; i < n; i++)sa[i] = v[i].second;
+
+  for(int i = 1; i < n; i++){
+    if(v[i].first == v[i - 1].first){
+      c[sa[i]] = c[sa[i - 1]];
+    }else{
+      c[sa[i]] = c[sa[i - 1]] + 1;
+    }
+  }
+
+  for(int k = 0; (1 << k) < n; k++){
+    for(int i = 0; i < n; i++){
+      v[i] = {{c[i], c[(i + (1 << k)) % n]}, i};
+    }
+    counting_sort(v);
+    for(int i = 0; i < n; i++)sa[i] = v[i].second;
+    c[sa[0]] = 0;
+    for(int i = 1; i < n; i++){
+      if(v[i].first == v[i - 1].first){
+        c[sa[i]] = c[sa[i - 1]];
+      }else{
+        c[sa[i]] = c[sa[i - 1]] + 1;
+      }
+    }
+  }
+  return sa;
+}
+
+]]></content>
+	<tabTrigger>SUFFIX_ARRAY</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
