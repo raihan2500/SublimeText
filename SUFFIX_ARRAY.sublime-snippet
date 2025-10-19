@@ -34,7 +34,7 @@ struct SuffixArray{
   
   void build(string str){
     str.push_back('#');
-    int n = str.size();
+    n = str.size();
     sa.assign(n, 0); c.assign(n, 0);
     vector<pair<pair<int, int>, int>> v(n);
     
