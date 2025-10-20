@@ -2,7 +2,7 @@
 	<content><![CDATA[
 
 
-int flag = 1;
+int flag = 1, rank;
 vector<mint> gauss(vector<vector<mint>> a){
   int n = a.size();
   int m = a[0].size() - 1;
@@ -30,7 +30,7 @@ vector<mint> gauss(vector<vector<mint>> a){
         a[j][k] -= sub * a[r][k];
       }
     }
-    r++;
+    r++; rank = r;
   }
   vector<mint> ans(m, 0);
   for(int i = m - 1; i >= 0; i--){
