@@ -11,6 +11,8 @@ struct Mat{
     n = v.size();
     n ? m = v[0].size() : 0;
   }
+
+  /*************************OPERATORS***************************/
   inline Mat operator + (const Mat &b){
     assert(n == b.n and m == b.m);
     Mat ans = Mat(n, m);
@@ -59,8 +61,26 @@ struct Mat{
   inline Mat& operator ^= (const int& k){return *this = (*this ^ k);}
   inline bool operator == (const Mat& b){return v == b.v;}
   inline bool operator != (const Mat& b){return v != b.v;}
+  friend std::ostream& operator <<(std::ostream &os, const Mat& a){
+    for(int i = 0; i < a.v.size(); i++){
+      for(int j = 0; j < a.v[0].size(); j++){
+        os << a.v[i][j] << " ";
+      }
+      os << "\n";
+    }
+    return os;
+  }
+  friend std::istream& operator >>(std::istream &is, Mat &A){
+    for(int i = 0; i < A.n; i++){
+      for(int j = 0; j < A.m; j++){
+        is >> A.v[i][j];
+      }
+    }
+    return is;
+  }
 
-  inline void make_unit(){
+  /************************FUNCTIONS****************************/
+  void make_unit(){
     assert(n == m);
     for(int i = 0; i < n; i++){
       for(int j = 0; j < n; j++){
@@ -69,7 +89,28 @@ struct Mat{
     }
   }
 
-  inline Mat Inverse(){
+  int rank(){
+    auto a = v;
+    int r = 0;
+    for(int i = 0; i < m; i++){
+      int p = -1;
+      for(int j = r; j < n and p == -1; j++){
+        if(a[j][i] != 0)p = j;
+      }
+      if(p == -1)continue;
+      swap(a[r], a[p]);
+      for(int j = r + 1; j < n; j++){
+        T f = a[j][i] / a[r][i];
+        for(int k = i; f and k < m; k++){
+          a[j][k] -= (a[r][k] * f);
+        }
+      }
+      r++;
+    }
+    return r;
+  }
+
+  Mat Inverse(){
     auto &a = v;
     int n = a.size(); 
     vector<int> col(n);
@@ -124,7 +165,7 @@ struct Mat{
     return res;
   }
   
-  inline pair<Mat, Mat> geo_sum(int k){
+  pair<Mat, Mat> geo_sum(int k){
     if(k == 1){
       Mat R(n, n); R.make_unit();
       return {*this, R};
@@ -140,16 +181,6 @@ struct Mat{
       A *= A;
       return {A, S};
     }
-  }
-
-  friend std::ostream& operator <<(std::ostream &os, const Mat& a){
-    for(int i = 0; i < a.v.size(); i++){
-      for(int j = 0; j < a.v[0].size(); j++){
-        os << a.v[i][j] << " ";
-      }
-      os << "\n";
-    }
-    return os;
   }
 };
 
