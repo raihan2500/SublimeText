@@ -9,7 +9,7 @@ struct SuffixArray{
   SuffixArray(string str) : str(str){
     build(str); n = sa.size(); rank.pop_back();
     for(int i = 0; i < n; i++)rank[sa[i]] = i;
-    buildLcp();
+    kasai();
   };
   
   void build(string str){
@@ -48,7 +48,7 @@ struct SuffixArray{
     sa.erase(sa.begin());
   }
 
-  void buildLcp(){
+  void kasai(){
     int n = sa.size();
     lcp.assign(n, 0);
     for(int i = 0, k = 0; i < n; i++){
