@@ -184,8 +184,6 @@ struct Mat{
   }
 };
 
-
-
 $1
 ]]></content>
 	<tabTrigger>MATRIX</tabTrigger>
