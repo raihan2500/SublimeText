@@ -186,9 +186,9 @@ struct Mat{
 
 
 
+$1
 ]]></content>
-	<tabTrigger>MATRIX
-$1</tabTrigger>
+	<tabTrigger>MATRIX</tabTrigger>
 	<scope>source.c++</scope>
 </snippet>
 
