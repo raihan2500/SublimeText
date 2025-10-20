@@ -1,0 +1,64 @@
+<snippet>
+	<content><![CDATA[
+template<typename T = int>
+struct BIT{
+  int n;
+  vector<T> t;
+  BIT(int n = 2e5) : n(n){
+    t.resize(n + 2);
+  }
+
+  T query(int i){
+    if(i < 0)return 0;
+    int ans = 0;
+    for(; i; i -= i & -i)ans += t[i];
+    return ans;
+  }
+  T query(int l, int r){
+    return query(r) - query(l - 1);
+  }
+
+  void update(int i, T val){
+    for(; i <= n; i += i & -i)t[i] += val;
+  }
+  void update(int l, int r, T val){
+    update(l, val);
+    update(r + 1, -val);
+  }
+};
+
+struct Compress{
+  vector<int> v;
+  Compress(const vector<int>& vec) : v(vec){
+    sort(v.begin(), v.end());
+    v.erase(unique(v.begin(), v.end()), v.end());
+  }
+  int get_id(int x){
+    return lower_bound(v.begin(), v.end(), x) - v.begin() + 1;
+  }
+  int size(){
+    return v.size();
+  }
+  int get_org(int x){
+    return v[--x];
+  }
+};
+
+int inversion(vector<int> &v){
+  int n = v.size() - 1;
+  Compress cc(v);
+  for(auto &i : v)i = cc.get_id(i);
+  BIT<int> bit(cc.size() + 2);
+  int ans = 0;
+  for(int i = 1; i <= n; i++){
+    ans += bit.query(v[i] + 1, bit.n);
+    bit.update(v[i], 1);
+  }
+  return ans;
+}
+$1
+]]></content>
+	<tabTrigger>INVERSION</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
