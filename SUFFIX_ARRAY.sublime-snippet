@@ -4,7 +4,7 @@
 struct SuffixArray{
   int n;
   string str;
-  vector<int> sa, c;
+  vector<int> sa, rank;
   SuffixArray(){};
   SuffixArray(string str) : str(str){
     build(str);
@@ -54,7 +54,7 @@ struct SuffixArray{
   void build(string str){
     str.push_back('#');
     n = str.size();
-    sa.assign(n, 0); c.assign(n, 0);
+    sa.assign(n, 0); rank.assign(n, 0);
     vector<pair<pair<int, int>, int>> v(n);
     
     for(int i = 0; i < n; i++)v[i] = {{str[i], 0}, i};
@@ -63,32 +63,30 @@ struct SuffixArray{
 
     for(int i = 1; i < n; i++){
       if(v[i].first == v[i - 1].first){
-        c[sa[i]] = c[sa[i - 1]];
+        rank[sa[i]] = rank[sa[i - 1]];
       }else{
-        c[sa[i]] = c[sa[i - 1]] + 1;
+        rank[sa[i]] = rank[sa[i - 1]] + 1;
       }
     }
 
     for(int k = 0; (1 << k) < n; k++){
       for(int i = 0; i < n; i++){
-        v[i] = {{c[i], c[(i + (1 << k)) % n]}, i};
+        v[i] = {{rank[i], rank[(i + (1 << k)) % n]}, i};
       }
       counting_sort(v);
       for(int i = 0; i < n; i++)sa[i] = v[i].second;
-      c[sa[0]] = 0;
+      rank[sa[0]] = 0;
       for(int i = 1; i < n; i++){
         if(v[i].first == v[i - 1].first){
-          c[sa[i]] = c[sa[i - 1]];
+          rank[sa[i]] = rank[sa[i - 1]];
         }else{
-          c[sa[i]] = c[sa[i - 1]] + 1;
+          rank[sa[i]] = rank[sa[i - 1]] + 1;
         }
       }
     }
-    sa.erase(sa.begin());
   }
 };
-
-
+$1
 ]]></content>
 	<tabTrigger>SUFFIX_ARRAY</tabTrigger>
 	<scope>source.c++</scope>
