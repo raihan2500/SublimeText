@@ -44,7 +44,7 @@ struct Compress{
   }
 };
 
-int inversion(vector<int> &v){
+int inversion(vector<int> v){
   int n = v.size() - 1;
   Compress cc(v);
   for(auto &i : v)i = cc.get_id(i);
