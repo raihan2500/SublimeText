@@ -4,29 +4,59 @@
 struct SuffixArray{
   int n;
   string str;
-  vector<int> sa, rank;
+  vector<int> sa, rank, lcp;
   SuffixArray(){};
   SuffixArray(string str) : str(str){
-    build(str);
+    build(str); n = sa.size(); rank.pop_back();
+    for(int i = 0; i < n; i++)rank[sa[i]] = i;
+    buildLcp();
   };
-
-  int count(string pat){
-    int m = pat.size();
-    int lo = 0, hi = n - 2, lb;
-    while(hi > lo){
-      int mid = (hi + lo) >> 1;
-      if(str.compare(sa[mid], m, pat) < 0)lo = mid + 1;
-      else hi = mid;
-    }
-    if(str.compare(sa[lo], m, pat))return 0;
+  
+  void build(string str){
+    str.push_back('#');
+    int n = str.size();
+    sa.assign(n, 0); rank.assign(n, 0);
+    vector<pair<pair<int, int>, int>> v(n);
     
-    lb = lo;  hi = n - 2;
-    while(hi > lo){
-      int mid = (hi + lo + 1) >> 1;
-      if(str.compare(sa[mid], m, pat) <= 0)lo = mid;
-      else hi = mid - 1;
+    for(int i = 0; i < n; i++)v[i] = {{str[i], 0}, i};
+    counting_sort(v);
+    for(int i = 0; i < n; i++)sa[i] = v[i].second;
+
+    for(int i = 1; i < n; i++){
+      if(v[i].first == v[i - 1].first){
+        rank[sa[i]] = rank[sa[i - 1]];
+      }else{
+        rank[sa[i]] = rank[sa[i - 1]] + 1;
+      }
     }
-    return hi - lb + 1;
+    for(int k = 0; (1 << k) < n; k++){
+      for(int i = 0; i < n; i++){
+        v[i] = {{rank[i], rank[(i + (1 << k)) % n]}, i};
+      }
+      counting_sort(v);
+      for(int i = 0; i < n; i++)sa[i] = v[i].second;
+      rank[sa[0]] = 0;
+      for(int i = 1; i < n; i++){
+        if(v[i].first == v[i - 1].first){
+          rank[sa[i]] = rank[sa[i - 1]];
+        }else{
+          rank[sa[i]] = rank[sa[i - 1]] + 1;
+        }
+      }
+    }
+    sa.erase(sa.begin());
+  }
+
+  void buildLcp(){
+    int n = sa.size();
+    lcp.assign(n, 0);
+    for(int i = 0, k = 0; i < n; i++){
+      if(rank[i] == 0){k = 0; continue;}
+      int j = sa[rank[i] - 1];
+      while(i + k < n and j + k < n and str[i + k] == str[j + k])k++;
+      lcp[rank[i]] = k;
+      if(k)k--;
+    }
   }
 
   void counting_sort(vector<pair<pair<int,int>,int>> &v){
@@ -50,40 +80,24 @@ struct SuffixArray{
     }
     v = ans;
   }
-  
-  void build(string str){
-    str.push_back('#');
-    n = str.size();
-    sa.assign(n, 0); rank.assign(n, 0);
-    vector<pair<pair<int, int>, int>> v(n);
+  int count(string pat){
+    int m = pat.size();
+    int n = sa.size();
+    int lo = 0, hi = n - 1, lb;
+    while(hi > lo){
+      int mid = (hi + lo) >> 1;
+      if(str.compare(sa[mid], m, pat) < 0)lo = mid + 1;
+      else hi = mid;
+    }
+    if(str.compare(sa[lo], m, pat))return 0;
     
-    for(int i = 0; i < n; i++)v[i] = {{str[i], 0}, i};
-    counting_sort(v);
-    for(int i = 0; i < n; i++)sa[i] = v[i].second;
-
-    for(int i = 1; i < n; i++){
-      if(v[i].first == v[i - 1].first){
-        rank[sa[i]] = rank[sa[i - 1]];
-      }else{
-        rank[sa[i]] = rank[sa[i - 1]] + 1;
-      }
+    lb = lo;  hi = n - 1;
+    while(hi > lo){
+      int mid = (hi + lo + 1) >> 1;
+      if(str.compare(sa[mid], m, pat) <= 0)lo = mid;
+      else hi = mid - 1;
     }
-
-    for(int k = 0; (1 << k) < n; k++){
-      for(int i = 0; i < n; i++){
-        v[i] = {{rank[i], rank[(i + (1 << k)) % n]}, i};
-      }
-      counting_sort(v);
-      for(int i = 0; i < n; i++)sa[i] = v[i].second;
-      rank[sa[0]] = 0;
-      for(int i = 1; i < n; i++){
-        if(v[i].first == v[i - 1].first){
-          rank[sa[i]] = rank[sa[i - 1]];
-        }else{
-          rank[sa[i]] = rank[sa[i - 1]] + 1;
-        }
-      }
-    }
+    return hi - lb + 1;
   }
 };
 $1
