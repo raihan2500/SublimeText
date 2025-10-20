@@ -31,8 +31,7 @@ struct SuffixArray{
     }
     for(int k = 0; (1 << k) < n; k++){
       for(int i = 0, j; i < n; i++){
-        j = i + (1 << k);
-        v[i] = {{rank[i], j < n ? rank[j] : -1}, i};
+        v[i] = {{rank[i], rank[(i + (1 << k)) % n] }, i};
       }
       counting_sort(v);
       for(int i = 0; i < n; i++)sa[i] = v[i].second;
