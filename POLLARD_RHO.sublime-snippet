@@ -8,7 +8,7 @@ namespace Pollard{
   bool isPrime[N]; int hp[N];
   vector<int> primes;
   
-  void init(){
+  constexpr void init(){
     for(int i = 2; i < N; i++){
       if(!hp[i]){
         hp[i] = i; isPrime[i] = 1;
@@ -20,11 +20,11 @@ namespace Pollard{
       }
     }
   }  
-
+  
   int binExp(int a, int b, int mod = M){
     int ans = 1; a %= M;
     for(; b; b >>= 1, a = (__uint128_t) a * a % mod){
-      (b & 1) && (ans = (__uint128_t) ans * a % mod);
+      if(b & 1)(ans = (__uint128_t) ans * a % mod);
     }
     return ans;
   }
@@ -39,7 +39,8 @@ namespace Pollard{
     }
     return true;
   }
-  bool miller_rabin(int n, int iter = 5){
+  
+  bool is_prime(int n, int iter = 5){
     if(n < 4)return n == 2 || n == 3;
     int p = 0, d = n - 1;
     while((d & 1) == 0){
@@ -74,7 +75,7 @@ namespace Pollard{
 
   vector<int> factorize(int n){
     if(n == 1)return {1};
-    if(miller_rabin(n))return {n};
+    if(is_prime(n))return {n};
     vector<int> factors, temp;
     
     if(n < N){
@@ -118,8 +119,7 @@ namespace Pollard{
     return ans;
   }
 }
-
-
+$1
 ]]></content>
 	<tabTrigger>POLLARD_RHO</tabTrigger>
 	<scope>source.c++</scope>
