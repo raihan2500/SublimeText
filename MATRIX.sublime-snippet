@@ -1,6 +1,224 @@
 <snippet>
 	<content><![CDATA[
-a
+
+template<typename T = mint>
+struct Mat{
+  int n, m;
+  vector<vector<T>> v;
+  Mat(){}
+  Mat(int n, int m) : n(n), m(m){v.assign(n, vector<T>(m, 0));}
+  Mat(vector<vector<T>> v) : v(v){
+    n = v.size();
+    n ? m = v[0].size() : 0;
+  }
+
+  /*************************OPERATORS***************************/
+  inline Mat operator + (const Mat &b){
+    assert(n == b.n and m == b.m);
+    Mat ans = Mat(n, m);
+    for(int i = 0; i < n; i++){
+      for(int j = 0; j < m; j++){
+        ans.v[i][j] = (v[i][j] + b.v[i][j]);
+      }
+    }
+    return ans;
+  }
+  inline Mat operator - (const Mat &b){
+    assert(n == b.n and m == b.m);
+    Mat ans = Mat(n, m);
+    for(int i = 0; i < n; i++){
+      for(int j = 0; j < m; j++){
+        ans.v[i][j] = (v[i][j] - b.v[i][j] + M);
+      }
+    }
+    return ans;
+  }
+  inline Mat operator * (const Mat &b){
+    assert(m == b.n);
+    Mat ans = Mat(n, b.m);
+    for(int i = 0; i < n; i++){
+      for(int j = 0; j < b.m; j++){
+        for(int k = 0; k < m; k++){
+          ans.v[i][j] = (ans.v[i][j] + v[i][k] * b.v[k][j]);
+        }
+      }
+    }
+    return ans;
+  }
+  inline Mat operator ^ (int k){
+    assert(n == m);
+    Mat ans(n, n), t = *this; ans.make_unit();
+    while(k){
+      if(k & 1)ans = ans * t;
+      t = t * t;
+      k >>= 1;
+    }
+    return ans;
+  }
+  inline Mat& operator += (const Mat& b){return *this = (*this + b);}
+  inline Mat& operator -= (const Mat& b){return *this = (*this - b);}
+  inline Mat& operator *= (const Mat& b){return *this = (*this * b);}
+  inline Mat& operator ^= (const int& k){return *this = (*this ^ k);}
+  inline bool operator == (const Mat& b){return v == b.v;}
+  inline bool operator != (const Mat& b){return v != b.v;}
+  friend std::ostream& operator <<(std::ostream &os, const Mat& a){
+    for(int i = 0; i < a.v.size(); i++){
+      for(int j = 0; j < a.v[0].size(); j++){
+        os << a.v[i][j] << " ";
+      }
+      os << "\n";
+    }
+    return os;
+  }
+  friend std::istream& operator >>(std::istream &is, Mat &A){
+    for(int i = 0; i < A.n; i++){
+      for(int j = 0; j < A.m; j++){
+        is >> A.v[i][j];
+      }
+    }
+    return is;
+  }
+
+  /************************FUNCTIONS****************************/
+  void make_unit(){
+    assert(n == m);
+    for(int i = 0; i < n; i++){
+      for(int j = 0; j < n; j++){
+        v[i][j] = (i == j);
+      }
+    }
+  }
+
+  int rank(){
+    auto a = v;
+    int r = 0;
+    for(int i = 0; i < m; i++){
+      int p = -1;
+      for(int j = r; j < n and p == -1; j++){
+        if(a[j][i] != 0)p = j;
+      }
+      if(p == -1)continue;
+      swap(a[r], a[p]);
+      for(int j = r + 1; j < n; j++){
+        T f = a[j][i] / a[r][i];
+        for(int k = i; f and k < m; k++){
+          a[j][k] -= (a[r][k] * f);
+        }
+      }
+      r++;
+    }
+    return r;
+  }
+
+  T determinant(){
+    assert(n == m);
+    auto a = v;
+    T ans = 1; int sign = 1;
+    for(int i = 0; i < n; i++){
+      int p = i;
+      for(int j = n; j < n; j++){
+        if(a[j][i] != 0){p = j; break;}
+      }
+      if(a[p][i] == 0)return 0;
+      if(p != i){
+        swap(a[p], a[i]);
+        sign = -sign;
+      }
+      ans *= a[i][i];
+      T inv = T(1) / a[i][i];
+      for(int j = i + 1; j < n; j++){
+        T f = a[j][i] * inv;
+        for(int k = i; k < n; k++){
+          a[j][k] -= f * a[i][k];
+        }
+      }
+    }
+    return ans * T(sign);
+  }
+  Mat Adj(){
+    T div = T(1) / determinant();
+    Mat inv = Inverse();
+    for(int i = 0; i < n; i++){
+      for(int j = 0; j < n; j++){
+        inv.v[i][j] *= div; 
+      }
+    }
+    return inv;
+  }
+  Mat Inverse(){
+    auto &a = v;
+    int n = a.size(); 
+    vector<int> col(n);
+    vector<vector<T>> ans(n, vector<T>(n)), res = ans;
+    for(int i = 0; i < n; i++)ans[i][i] = 1, col[i] = i;
+  
+    for(int i = 0; i < n; i++){
+      int r = i, c = i;
+      for(; r < n ; r++){
+        for(c = i; c < n; c++){
+          if(a[r][c] != 0){
+            goto found;
+          }
+        }
+      }
+      return {};
+      found:
+      a[i].swap(a[r]); ans[i].swap(ans[r]);
+      for(int j = 0; j < n; j++){
+        swap(a[j][i], a[j][c]);
+        swap(ans[j][i], ans[j][c]);
+      }
+      swap(col[i], col[c]);
+  
+      T div = T(1) / a[i][i];
+      for(int j = 0; j < n; j++){
+        a[i][j] *= div;
+        ans[i][j] *= div;
+      }
+  
+      for(int j = i + 1; j < n; j++){
+        T f = a[j][i];
+        for(int k = 0; k < n; k++){
+          a[j][k] -= f * a[i][k];
+          ans[j][k] -= f * ans[i][k];
+        }
+      }
+    }
+    for(int i = n - 1; i > 0; i--){
+      for(int j = 0; j < i; j++){
+        T f = a[j][i];
+        for(int k = 0; k < n; k++){
+          ans[j][k] -= ans[i][k] * f;
+        }
+      }
+    }
+    for(int i = 0; i < n; i++){
+      for(int j = 0; j < n; j++){
+        res[col[i]][col[j]] = ans[i][j];
+      }
+    }
+    return res;
+  }
+  
+  
+  pair<Mat, Mat> geo_sum(int k){
+    if(k == 1){
+      Mat R(n, n); R.make_unit();
+      return {*this, R};
+    }
+    if(k & 1){ //Sk = S(k - 1) + T^(k - 1)
+      auto [A, S] = geo_sum(k - 1);
+      S += A;
+      A *= (*this);
+      return {A, S};
+    }else{ //Sk = S(k/2) + (T ^(k/2))*S(k / 2)
+      auto [A, S] = geo_sum(k / 2);
+      S += S * A;
+      A *= A;
+      return {A, S};
+    }
+  }
+};
 $1
 ]]></content>
 	<tabTrigger>MATRIX</tabTrigger>
