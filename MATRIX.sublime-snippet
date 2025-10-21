@@ -88,8 +88,17 @@ struct Mat{
       }
     }
   }
+  vector<vector<T>> transpose(){
+    vector<vector<T>> ans(m, vector<T>(n));
+    for(int i = 0; i < n; i++){
+      for(int j = 0; j < m; j++){
+        ans[j][i] = v[i][j];
+      }
+    }
+    return ans;
+  }
 
-  int rank(){
+  int rank(bool show = false){
     auto a = v;
     int r = 0;
     for(int i = 0; i < m; i++){
@@ -106,6 +115,13 @@ struct Mat{
         }
       }
       r++;
+    }
+    if(show){
+      for(int i = 0; i < n; i++){
+        for(int j = 0; j < m; j++){
+          cerr << a[i][j] <<" ";
+        } cerr << "\n";
+      }
     }
     return r;
   }
