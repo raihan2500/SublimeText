@@ -88,17 +88,8 @@ struct Mat{
       }
     }
   }
-  vector<vector<T>> transpose(){
-    vector<vector<T>> ans(m, vector<T>(n));
-    for(int i = 0; i < n; i++){
-      for(int j = 0; j < m; j++){
-        ans[j][i] = v[i][j];
-      }
-    }
-    return ans;
-  }
 
-  int rank(bool show = false){
+  int rank(){
     auto a = v;
     int r = 0;
     for(int i = 0; i < m; i++){
@@ -116,16 +107,44 @@ struct Mat{
       }
       r++;
     }
-    if(show){
-      for(int i = 0; i < n; i++){
-        for(int j = 0; j < m; j++){
-          cerr << a[i][j] <<" ";
-        } cerr << "\n";
-      }
-    }
     return r;
   }
 
+  T determinant(){
+    assert(n == m);
+    auto a = v;
+    T ans = 1; int sign = 1;
+    for(int i = 0; i < n; i++){
+      int p = i;
+      for(int j = n; j < n; j++){
+        if(a[j][i] != 0){p = j; break;}
+      }
+      if(a[p][i] == 0)return 0;
+      if(p != i){
+        swap(a[p], a[i]);
+        sign = -sign;
+      }
+      ans *= a[i][i];
+      T inv = T(1) / a[i][i];
+      for(int j = i + 1; j < n; j++){
+        T f = a[j][i] * inv;
+        for(int k = i; k < n; k++){
+          a[j][k] -= f * a[i][k];
+        }
+      }
+    }
+    return ans * T(sign);
+  }
+  Mat Adj(){
+    T div = T(1) / determinant();
+    Mat inv = Inverse();
+    for(int i = 0; i < n; i++){
+      for(int j = 0; j < n; j++){
+        inv.v[i][j] *= div; 
+      }
+    }
+    return inv;
+  }
   Mat Inverse(){
     auto &a = v;
     int n = a.size(); 
@@ -180,6 +199,7 @@ struct Mat{
     }
     return res;
   }
+  
   
   pair<Mat, Mat> geo_sum(int k){
     if(k == 1){
