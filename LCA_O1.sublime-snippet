@@ -71,9 +71,7 @@ struct LCA{
     return dist(u, x) + dist(v, x) == dist(u, v);
   }
 };
-
-
-
+$1
 ]]></content>
 	<tabTrigger>LCA_O1</tabTrigger>
 	<scope>source.c++</scope>
