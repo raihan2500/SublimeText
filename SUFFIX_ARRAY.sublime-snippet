@@ -13,7 +13,7 @@ struct SuffixArray{
   };
   
   void build(string str){
-    str.push_back('#');
+    str.push_back(1);
     int n = str.size();
     sa.assign(n, 0); rank.assign(n, 0);
     vector<pair<pair<int, int>, int>> v(n);
