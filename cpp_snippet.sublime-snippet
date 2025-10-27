@@ -18,7 +18,7 @@ using ull = uint64_t;
 
 #define vin                 vector<int>
 #define lin(n)              int n;cin>>n;
-#define pr                  pair<int, int>
+#define pii                 pair<int, int>
 #define pb                  push_back
 #define pp                  pop_back()
 #define epb                 emplace_back
@@ -71,7 +71,6 @@ int32_t main(){
   }
   return 0;
 }
-
 $1
 ]]></content>
 	<tabTrigger>cpp_snippet</tabTrigger>
