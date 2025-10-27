@@ -1,10 +1,10 @@
 <snippet>
 	<content><![CDATA[
 
-
+int n;
 int timer = 0;
 stack<int> st;
-vector<vector<int>> scc;
+vector<vector<int>> scc, graph(N);
 vector<int> in(N, -1), low(N, -1), inStack(N);
 
 void dfs(int u){
@@ -31,7 +31,22 @@ void dfs(int u){
   }
 }
 
+vector<pii> make_graph(vector<pii> &edges){
+  vector<int> cid(n + 1);
+  int n = 0;
+  for(auto &v : scc){ 
+    ++n;
+    for(auto i : v)cid[i] = n;
+  }
+  vector<pii> ans;
+  for(auto &[u, v] : edges){
+    if(cid[u] == cid[v])continue;
+    ans.push_back({cid[u], cid[v]});
+  }  
+  return ans;
+};
 
+$1
 ]]></content>
 	<tabTrigger>SCC_TARJAN</tabTrigger>
 	<scope>source.c++</scope>
