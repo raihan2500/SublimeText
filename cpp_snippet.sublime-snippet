@@ -37,7 +37,7 @@ using ull = uint64_t;
 #define _log2(n)            63 - __builtin_clzll(n)
 #define pop_count(n)        __builtin_popcountll(n)
 
-mt19937                     rng(chrono::steady_clock::now().time_since_epoch().count());
+mt19937                     rnd(chrono::steady_clock::now().time_since_epoch().count());
 #define rng(x,y)            uniform_int_distribution<int>(x,y)(rng)
 
 #ifdef DEBUG
