@@ -31,18 +31,19 @@ void dfs(int u){
   }
 }
 
-vector<pii> make_graph(vector<pii> &edges){
+vector<pii> re_edges(vector<pii> &edges){
   vector<int> cid(n + 1);
-  int n = 0;
-  for(auto &v : scc){ 
-    ++n;
-    for(auto i : v)cid[i] = n;
+  int m = 0;
+  for(auto &v : scc){ ++m;
+    for(auto i : v)cid[i] = m;
   }
   vector<pii> ans;
   for(auto &[u, v] : edges){
     if(cid[u] == cid[v])continue;
     ans.push_back({cid[u], cid[v]});
   }  
+  sort(ans.begin(), ans.end());
+  ans.erase(unique(ans.begin(), ans.end()), ans.end());
   return ans;
 };
 
