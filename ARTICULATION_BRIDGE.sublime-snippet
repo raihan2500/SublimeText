@@ -1,0 +1,32 @@
+<snippet>
+	<content><![CDATA[
+
+int n, m;
+vector<int> graph[N];
+int in[N], low[N], timer = 0;
+
+void dfs(int u, int p){
+  vis[u] = true;
+  in[u] = low[u] = ++timer;
+  
+  for(auto v : graph[u])if(v != p){
+    if(!vis[v]){
+      //Forward edge
+      dfs(v, u);
+      if(in[u] < low[v]){
+        cout << u << " " << v << " is a bridge.\n";
+      }
+      low[u] = min(low[u], low[v]);
+
+    }else{
+      //Back edge
+      low[u] = min(low[u], in[v]);
+    }
+  }
+}
+$1
+]]></content>
+	<tabTrigger>ARTICULATION_BRIDGE</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
