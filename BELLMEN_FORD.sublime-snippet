@@ -1,0 +1,29 @@
+<snippet>
+	<content><![CDATA[
+
+void bellmenFord(){
+  int n, m;
+  cin >> n >> m;
+  struct E{int u, v, w;};
+  vector<E> edges(m);
+  for(auto &[u, v, w] : edges){
+    cin >> u >> v >> w;
+  }
+  
+  int src = 1;
+  vector<int> dist(n + 1, INF);
+  for(int it = 0; it < n - 1; it++){
+    for(auto [u, v, w] : edges){
+      dist[v] = min(dist[v], w + dist[u]);
+    }
+  }
+  for(int i = 1; i <= n; i++){
+    cout << dist[i] <<' ';
+  }
+}
+$1
+]]></content>
+	<tabTrigger>BELLMEN_FORD</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
