@@ -1,34 +1,33 @@
 <snippet>
 	<content><![CDATA[
 
-struct Point{
-  int x, y;
+struct point{
+  double x, y;
+  point(double x = 0, double y = 0) : x(x), y(y){};
 } p0;
 
-//0 = collinear, 1 = clockwise, 2 = counterclockwise
-int orientation(Point p1, Point p2, Point p3){
-  int cross = (p2.x - p1.x) * (p3.y - p2.y) - (p2.y - p1.y) * (p3.x - p2.x);
-  if(!cross)return 0;
-  return (cross > 0) ? 2 : 1;
+int orientation(point &a, point &b, point &c){
+  double cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+  if(fabs(cross) < 1e-9)return 0;  //colinear
+  return cross > 0 ? 1 : -1;       // +1 = CCW(left), -1 = CW(right)
 }
 
-bool comp(Point &p1, Point &p2){
-  int dir = orientation(p0, p1, p2);
+bool comp(point &a, point &b){
+  int dir = orientation(p0, a, b);
   if(dir == 0){
-    if(p1.y == p2.y)return p1.x < p2.x;
-    return p1.y < p2.y;
+    if(a.y == b.y)return a.x < b.x;
+    return a.y < b.y;
   }
-  return dir == 2; // counterclockwise
+  return dir > 0; //Take left point
 }
 
-vector<Point> convexHull(vector<Point> v){
+vector<point> grahamScan(vector<point> v){
   int n = v.size();
-  for(int i = 1; i < n; i++){
-    if(v[i].y < v[0].y or v[i].y == v[0].y and v[i].x < v[0].x){
-      swap(v[0], v[i]);
+  for(int i = 0; i < n; i++){
+    if(v[i].y < v[0].y or (v[i].y == v[0].y and v[i].x < v[0].x)){
+      swap(v[i], v[0]);
     }
   }
-
   p0 = v[0];
   sort(v.begin() + 1, v.end(), comp);
 
@@ -38,17 +37,17 @@ vector<Point> convexHull(vector<Point> v){
     v[m++] = v[i];
   }
   if(m < 3)return {};
-  vector<Point> ans = {v[0], v[1], v[2]};
+
+  vector<point>ans = {v[0], v[1], v[2]};
   for(int i = 3; i < m; i++){
-    while(ans.size() > 1 and orientation(ans[ans.size() - 2], ans.back(), v[i]) != 2){
+    while(ans.size() > 1 and orientation(ans[ans.size() - 2], ans[ans.size() - 1], v[i]) != 1){
       ans.pop_back();
     }
     ans.push_back(v[i]);
   }
   return ans;
 }
-
-
+$1
 ]]></content>
 	<tabTrigger>CONVEX_HULL</tabTrigger>
 	<scope>source.c++</scope>
