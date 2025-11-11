@@ -17,6 +17,7 @@ using ull = uint64_t;
 #define cnl                 clog<<"\n"
 
 #define vin                 vector<int>
+#define v2d                 vector<vector<int>> 
 #define lin(n)              int n;cin>>n;
 #define pii                 pair<int, int>
 #define pb                  push_back
@@ -71,6 +72,7 @@ signed main(){
   }
   return 0;
 }
+
 $1
 ]]></content>
 	<tabTrigger>cpp_snippet</tabTrigger>
