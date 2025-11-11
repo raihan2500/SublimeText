@@ -3,7 +3,7 @@
 
 int n, m;
 vector<int> graph[N];
-int in[N], low[N], timer = 0;
+int in[N], low[N], vis[N], timer = 0;
 
 void dfs(int u, int p){
   vis[u] = true;
