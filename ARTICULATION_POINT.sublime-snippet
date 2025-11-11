@@ -14,16 +14,16 @@ void dfs(int u, int p = 0){
     if(vis[v]){
       low[u] = min(low[u], in[v]);
     }else{
-      dfs(v, u);
-      low[u] = min(low[u], low[v]);
-      if(low[v] >= in[u] and p){
-        art_point.insert(v);
-      }
       cnt++;
+      dfs(v, u);
+      if(low[v] >= in[u] and p){
+        art_point.insert(u);
+      }
+      low[u] = min(low[u], low[v]);
     }
   }
-  if(p and cnt > 1){
-    art_point.insert(v);
+  if(!p and cnt > 1){
+    art_point.insert(u);
   }
 }
 
@@ -39,7 +39,7 @@ void find_cutpoints(){
   }
 }
 
-
+$1
 ]]></content>
 	<tabTrigger>ARTICULATION_POINT</tabTrigger>
 	<scope>source.c++</scope>
