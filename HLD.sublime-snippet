@@ -1,0 +1,172 @@
+<snippet>
+	<content><![CDATA[
+
+const int RET = 0;
+inline int Pull(int a, int b){
+  return a + b;
+}
+
+template<typename T = int, T(*pull)(T, T) = Pull, T R = RET>
+struct ST{
+  #define lc  (node << 1)
+  #define rc  lc + 1
+  int n;
+  vector<T> t, v;
+  ST(){}
+  ST(vector<T> v) : v(v){
+    n = v.size() - 1; //-1 for 1 indexed v
+    t.resize(4 * n);
+    build(1, 1, n);
+  }
+
+  void build(int node, int lo, int hi){
+    if(hi == lo){
+      t[node] = v[lo];
+      return;
+    }
+    int mid = (lo + hi) >> 1;
+    build(lc, lo, mid);
+    build(rc, mid + 1, hi);
+    t[node] = pull(t[lc], t[rc]);
+  }
+
+  void update(int node, int lo, int hi, int l, T val){
+    if(lo > l or hi < l)return;
+    if(lo == hi){
+      t[node] = v[lo] = val; //replace
+      return;
+    }
+    int mid = (lo + hi) >> 1;
+    update(lc, lo , mid, l, val);
+    update(rc, mid + 1, hi, l, val);
+    t[node] = pull(t[lc], t[rc]);
+  }
+  T query(int node, int lo, int hi, int l, int r){
+    if(hi < l or lo > r)return R;
+    if(lo >= l and hi <= r)return t[node];
+    int mid = (lo + hi) >> 1;
+    T q1 = query(lc, lo , mid, l, r);
+    T q2 = query(rc, mid + 1, hi, l, r);
+    return pull(q1, q2);
+  }
+
+  void update(int l, T val){
+    update(1, 1, n, l, val);
+  }
+  T query(int l, int r){
+    return query(1, 1, n, l, r);
+  }
+};
+ST<> st;
+
+
+//Graph + LCA part
+int n, m;
+const int LG = 19;
+vector<int> graph[N];
+int par[N][LG + 1], sz[N], dep[N];
+
+void init(int u, int p){
+  sz[u] = 1;
+  par[u][0] = p;
+  for(int i = 1; i <= LG; i++)par[u][i] = par[par[u][i - 1]][i - 1];
+  if(p)graph[u].erase(find(all(graph[u]), p));
+  for(auto &v : graph[u])if(v != p){
+    dep[v] = dep[u] + 1;
+    init(v, u); 
+    sz[u] += sz[v];
+    auto &x = graph[u][0];
+    if(sz[v] > sz[x])swap(v, x);
+  } 
+}
+int kth(int u, int k){
+  if(k < 0)k = 0;
+  while(k){
+    int lg = 31 - __builtin_clz(k); //log2(k)
+    k -= (1 << lg);
+    u = par[u][lg]; 
+  }
+  return u;
+}
+int lca(int u, int v){
+  if(dep[u] < dep[v])swap(u, v);
+  u = kth(u, dep[u] - dep[v]);
+  if(u == v)return u;
+  for(int i = LG; i >= 0; i--){
+    if(par[u][i] == par[v][i])continue;
+    u = par[u][i];
+    v = par[v][i];
+  }
+  return par[u][0];
+}
+
+
+//HLD part
+int cur_pos = 0;
+vector<int> head(N), pos(N), arr;
+
+void hld(int u = 1){
+  pos[u] = ++cur_pos;
+  for(auto &v : graph[u]){
+    if(v == graph[u][0])head[v] = head[u];
+    else head[v] = v;
+    hld(v);
+  }
+}
+
+int query_up(int u, int v){
+  int ans = 0;
+  while(head[u] != head[v]){
+    int chain_head = head[u];
+    int cur = st.query(pos[chain_head], pos[u]);
+    u = par[chain_head][0];
+    ans = Pull(ans, cur);
+  }
+  int cur = st.query(pos[v], pos[u]);
+  ans = Pull(ans, cur);
+  return ans;
+}
+
+int query(int u, int v){
+  int l = lca(u, v);
+  int ans = Pull(query_up(u, l), query_up(v, l)) - query_up(l, l); //(-) for sum query
+  return ans;
+}
+
+void reset(){
+  for(int i = 0; i <= n; i++){
+    graph[i].clear();
+    pos[i] = head[i] = 0;
+    dep[i] = sz[i] = 0;
+  }
+}
+
+
+void solve(){
+  cin >> n;
+  int vals[n + 1];
+  for(int i = 1; i <= n; i++)cin >> vals[i];
+  for(int i = 1; i < n; i++){
+    int x, y;
+    cin >> x >> y;
+    graph[x].push_back(y);
+    graph[y].push_back(x);
+  }
+  init(1, 0);
+  head[1] = 1;
+  hld(1);
+  arr.assign(cur_pos + 1, 0);
+
+  for(int i = 1; i <= n; i++)arr[pos[i]] = vals[i];
+  st = ST<>(arr);
+  
+  //enjoy here
+  
+
+}
+$1
+]]></content>
+	<tabTrigger>HLD</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
