@@ -1,15 +1,14 @@
 <snippet>
 	<content><![CDATA[
 
-
 int binExp(int a, int b, int mod = M){
-  int ans = 1; a %= M;
+  int ans = 1; a %= mod;
   for(; b; b >>= 1, a = (__uint128_t) a * a % mod){
     if(b & 1)(ans = (__uint128_t) ans * a % mod);
   }
   return ans;
 }
-int mmiOfX(int b){ return binExp(b, M - 2);}
+int mmiOfX(int b, int mod = M){ return binExp(b, mod - 2);}
 
 $1
 ]]></content>
