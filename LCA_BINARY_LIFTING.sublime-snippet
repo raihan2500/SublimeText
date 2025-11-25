@@ -2,13 +2,19 @@
 	<content><![CDATA[
 
 const int LG = 20;
-int depth[N], par[N][LG + 1];
+int dep[N], par[N][LG + 1];
+int mx[N][LG + 1], mn[N][LG + 1];
 
-void init(int u = 1, int p = 0){
+void init(int u = 1, int p = 0){ //take parameter mxi, mni for max min
   par[u][0] = p;
-  for(int i = 1; i <= LG; i++)par[u][i] = par[par[u][i - 1]][i - 1];
+  // mx[u][0] = mxi;   mn[u][0] = mni;
+  for(int i = 1; i <= LG; i++){
+    par[u][i] = par[par[u][i - 1]][i - 1];
+    // mx[u][i] = max(mx[u][i - 1], mx[par[u][i - 1]][i - 1]);
+    // mn[u][i] = min(mn[u][i - 1], mn[par[u][i - 1]][i - 1]);
+  }
   for(auto &v : graph[u])if(v != p){
-    depth[v] = depth[u] + 1;
+    dep[v] = dep[u] + 1;
     init(v, u);
   }
 }
@@ -24,8 +30,8 @@ int kth(int u, int k){
 }
 
 int lca(int u, int v){
-  if(depth[u] < depth[v])swap(u, v);
-  u = kth(u, depth[u] - depth[v]);
+  if(dep[u] < dep[v])swap(u, v);
+  u = kth(u, dep[u] - dep[v]);
   if(u == v)return u;
   for(int i = LG; i >= 0; i--){
     if(par[u][i] == par[v][i])continue;
@@ -37,14 +43,24 @@ int lca(int u, int v){
 
 int dist(int u, int v){
   int lc = lca(u, v);
-  return depth[u] + depth[v] - 2 * depth[lc];
+  return dep[u] + dep[v] - 2 * dep[lc];
 }
 
+//does x lies on path u->v?
 bool onPath(int u, int v, int x){
   return (dist(u, x) + dist(v, x)) == dist(u, v);
 }
 
-
+//kth node from u-->v. 0th is u
+int go(int u, int v, int k){
+  int l = lca(u, v);
+  int d = dep[u] + dep[v] - 2 * dep[l];
+  assert(k <= d);
+  if(dep[l] + k <= dep[u])return kth(u, k);
+  k -= dep[u] - dep[l];
+  return kth(v, dep[v] - dep[l] - k);
+}
+$1
 ]]></content>
 	<tabTrigger>LCA_BINARY_LIFTING</tabTrigger>
 	<scope>source.c++</scope>
