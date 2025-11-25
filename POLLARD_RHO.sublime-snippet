@@ -8,7 +8,7 @@ namespace Pollard{
   bool isPrime[N]; int hp[N];
   vector<int> primes;
   
-  constexpr void init(){
+  void init(){
     for(int i = 2; i < N; i++){
       if(!hp[i]){
         hp[i] = i; isPrime[i] = 1;
@@ -20,15 +20,15 @@ namespace Pollard{
       }
     }
   }  
-  
+
   int binExp(int a, int b, int mod = M){
-    int ans = 1; a %= M;
+    int ans = 1; a %= mod;
     for(; b; b >>= 1, a = (__uint128_t) a * a % mod){
       if(b & 1)(ans = (__uint128_t) ans * a % mod);
     }
     return ans;
   }
-  int mmiOfX(int b){ return binExp(b, M - 2);}
+  int mmiOfX(int b, int mod = M){ return binExp(b, mod - 2);}
   
   bool is_composite(int n, int a, int d, int p){
     int x = binExp(a, d, n);
@@ -74,26 +74,24 @@ namespace Pollard{
   }
 
   vector<int> factorize(int n){
-    if(n == 1)return {1};
+    if(n == 1)return {};
     if(is_prime(n))return {n};
-    vector<int> factors, temp;
-    
+    vector<int> v, w;
     if(n < N){
       while(n > 1){
         int pm = hp[n];
         while(n % pm == 0){
-          factors.push_back(pm);
+          v.push_back(pm);
           n /= pm;
         }
       }
-      return factors;
+      return v;
     }
-
     int x = rho(n);
-    factors = factorize(x);
-    temp = factorize(n / x);
-    factors.insert(factors.end(), temp.begin(), temp.end());
-    return factors;
+    v = factorize(x);
+    w = factorize(n / x);
+    v.insert(v.end(), w.begin(), w.end());
+    return v;
   }
 
   void allDivsGen(int ind, int curVal, vector<pair<int, int>> &pmFact, set<int> &ans){
@@ -106,7 +104,7 @@ namespace Pollard{
       curVal *= pmFact[ind].first;
     }
   }
-
+  
   set<int> allDivisors(int n){
     set<int> ans;
     vector<pair<int, int>> prime_factors;
