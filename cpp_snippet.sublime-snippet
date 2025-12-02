@@ -39,7 +39,7 @@ using ull = uint64_t;
 #define pop_count(n)        __builtin_popcountll(n)
 
 mt19937                     rnd(chrono::steady_clock::now().time_since_epoch().count());
-#define rng(x,y)            uniform_int_distribution<int>(x,y)(rng)
+#define rng(x,y)            uniform_int_distribution<int>(x,y)(rnd)
 
 #ifdef DEBUG
 #include<algo/debug.h>
@@ -67,12 +67,11 @@ signed main(){
   int test = 1;  
   cin>>test;
   for(int i = 1; i <= test; i++){
-      // cout << "Case #" << i <<": ";
+      // cout << "Case " << i <<": ";
       _();
   }
   return 0;
 }
-
 $1
 ]]></content>
 	<tabTrigger>cpp_snippet</tabTrigger>
