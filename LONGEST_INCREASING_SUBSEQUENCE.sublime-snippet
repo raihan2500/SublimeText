@@ -1,0 +1,34 @@
+<snippet>
+	<content><![CDATA[
+
+vector<int> LIS(vector<int> v){
+  int n = v.size();
+  vector<int> lis, idx, par(n, -1), ans;
+
+  for(int i = 0; i < n; i++){
+    auto p = lower_bound(lis.begin(), lis.end(), v[i]) - lis.begin();
+    
+    if(p == lis.size()){
+      lis.push_back(v[i]);
+      idx.push_back(i);
+    }else{
+      lis[p] = v[i];
+      idx[p] = i;
+    }
+    if(p > 0)par[i] = idx[p - 1];
+  }
+
+  int cur = idx.back();
+  while(cur != -1){
+    ans.push_back(v[cur]);
+    cur = par[cur];
+  }
+  reverse(ans.begin(), ans.end());
+  return ans;
+}
+$1
+]]></content>
+	<tabTrigger>LONGEST_INCREASING_SUBSEQUENCE</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
