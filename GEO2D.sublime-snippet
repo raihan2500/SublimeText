@@ -17,6 +17,12 @@ double proj(point a, point b){ // |A|cosθ
   return dot(a, b) / b.norm();
 }
 
+double dist_euclid(point a, point b){
+  double dx = a.x - b.x;
+  double dy = a.y - b.y;
+  return dx*dx + dy*dy;
+}
+
 int orient(point a, point b, point c){
   int cross = (c.y - a.y)*(b.x - a.x) - (b.y - a.y)*(c.x - a.x);
   if(cross == 0)return 0;   //same line
@@ -63,7 +69,7 @@ int lattice_points_on_seg(point a, point b){
   return __gcd(dx, dy) - 1;
 }
 
-
+$1
 ]]></content>
 	<tabTrigger>GEO2D</tabTrigger>
 	<scope>source.c++</scope>
