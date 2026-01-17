@@ -1,0 +1,54 @@
+<snippet>
+	<content><![CDATA[
+
+/*
+  Kuhn's Algorithm. Time complexity: O(V*E)
+  Problem: Maximum bipartite matching.
+*/
+
+vector<int> matchR, vis;
+vector<vector<int>> graph;
+
+bool dfs(int u){
+  for(auto v : graph[u]){
+    if(vis[v])continue;
+    vis[v] = true;
+    if(!matchR[v] or dfs(matchR[v])){
+      matchR[v] = u;
+      return true;
+    }
+  }
+  return false;
+}
+
+int max_matching(){
+  int n, m, e;
+  cin >> n >> m >> e;
+  
+  //left side has n nodes
+  //right side has m nodes
+  //there are e edges 
+
+  matchR.assign(m + 1, 0);
+  vis.assign(m + 1, 0);
+  graph.assign(n + 1, {});
+
+  for(int i = 0; i < e; i++){
+    int u, v;
+    cin >> u >> v;
+    graph[u].push_back(v);
+  }
+
+  int ans = 0;
+  for(int u = 1; u <= n; u++){
+    fill(all(vis), 0ll);
+    ans += dfs(u);  
+  }
+  return ans;
+}
+$1
+]]></content>
+	<tabTrigger>KHUNS</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
