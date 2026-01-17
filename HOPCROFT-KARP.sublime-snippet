@@ -1,0 +1,77 @@
+<snippet>
+	<content><![CDATA[
+
+struct HopcroptKarp{
+  int n, m, e;
+  vector<int> matchL, matchR, dist;
+  vector<vector<int>> graph;
+
+  HopcroptKarp(int n, int m) : n(n), m(m){
+    dist.assign(n + 1, 0);
+    graph.assign(n + 1, {});
+    matchL.assign(n + 1, 0);
+    matchR.assign(m + 1, 0);
+  }
+  void add_edge(int u, int v){
+    graph[u].push_back(v);
+  }
+
+  bool bfs(){
+    queue<int> q;
+    for(int i = 1; i <= n; i++){
+      if(!matchL[i]){
+        dist[i] = 0;
+        q.push(i);
+      }else{
+        dist[i] = INF;
+      }
+    }
+    bool found = false;
+
+    while(!q.empty()){
+      int u = q.front(); q.pop();
+
+      for(auto v : graph[u]){
+        if(matchR[v] and dist[matchR[v]] == INF){
+          dist[matchR[v]] = dist[u] + 1;
+          q.push(matchR[v]);
+        }
+        if(!matchR[v]){
+          found = true;
+        }
+      }
+    }
+
+    return found;
+  }
+
+  bool dfs(int u){
+    for(auto v : graph[u]){
+      if(!matchR[v] or (dist[matchR[v]] == dist[u] + 1 and dfs(matchR[v]))){
+        matchL[u] = v;
+        matchR[v] = u;
+        return true;
+      }
+    }
+    dist[u] = INF;
+    return false;
+  }
+
+  int maxMatching(){
+    int ans = 0;
+    while(bfs()){
+      for(int i = 1; i <= n; i++){
+        if(!matchL[i]){
+          ans += dfs(i);
+        }
+      }
+    }
+    return ans;
+  }
+};
+$1
+]]></content>
+	<tabTrigger>HOPCROFT_KARP</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
