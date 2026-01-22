@@ -1,0 +1,38 @@
+<snippet>
+	<content><![CDATA[
+
+vector<pii> edges;
+int b_color[N];
+bool bipar(int u, int c){
+  if(b_color[u] and b_color[u] != c)return false;
+
+  b_color[u] = c;
+  for(auto v : graph[u]){
+    if(b_color[v] == 0){
+      if(c == 1){
+        edges.push_back({u, v});
+      }else{
+        edges.push_back({v, u});
+      }
+      if(bipar(v, c == 1 ? 2 : 1) == false)return false;
+    }
+  }
+  return true;
+}
+
+bool bipartite(){
+  edges.clear();
+  for(int i = 1; i <= n; i++)b_color[i] = 0;
+  for(int i = 1; i <= n; i++){
+    if(!b_color[i]){
+      if(!bipar(i, 1))return false;
+    }
+  }
+  return true;
+}
+$1
+]]></content>
+	<tabTrigger>FIND_BIPARTITE</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
