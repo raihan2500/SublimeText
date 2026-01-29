@@ -49,8 +49,8 @@ mt19937                     rnd(chrono::steady_clock::now().time_since_epoch().c
 #   define db(...) "" 
 #endif
 
-// const int M = 998244353;
 const long long INF = 1e18;
+// const int M = 998244353;
 const int M = 1e9 + 7;
 const int N = 2e5 + 100;
 
