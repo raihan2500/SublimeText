@@ -24,7 +24,7 @@ pii e_gcd(int a, int b){
 }
 
 int mmiofX(int a, int mod){
-  return (mod + e_gcd(a, mod))%mod;
+  return (mod + e_gcd(a, mod).first)%mod;
 }
 $1
 ]]></content>
