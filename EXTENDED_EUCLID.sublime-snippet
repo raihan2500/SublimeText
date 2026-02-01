@@ -22,6 +22,10 @@ pii e_gcd(int a, int b){
   int y = x1 - (a / b)*y1;
   return {x, y};
 }
+
+int mmiofX(int a, int mod){
+  return (mod + e_gcd(a, mod))%mod;
+}
 $1
 ]]></content>
 	<tabTrigger>EXTENDED_EUCLID</tabTrigger>
