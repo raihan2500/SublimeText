@@ -3,7 +3,7 @@
 
 const int LG = 62;
 struct Basis{
-  int basis[LG + 1], sz = 0;
+  int sz = 0; vector<int> basis = vector<int>(LG + 1);
   void insert(int x){
     for(int i = LG; i >= 0; i--){
       if(!(x & (1ll << i)))continue;
@@ -14,14 +14,12 @@ struct Basis{
       x ^= basis[i];
     }
   }
-
   bool can(int x){
     for(int i = LG; i >= 0; i--){
       x = min(x, x ^ basis[i]);
     }
     return x == 0;
   }
-
   int Max(int ans = 0){
     for(int i = LG; i >= 0; i--){
       ans = max(ans, ans ^ basis[i]);
@@ -29,6 +27,21 @@ struct Basis{
     return ans;
   }
 
+  void nomalize(){ //use before kth query
+    for(int i = LG; i >= 0; i--){
+      if(!basis[i])continue;
+      for(int j = i - 1; j >= 0; j--){
+        if(basis[j] and (basis[i]&(1ll << j))){
+          basis[i] ^= basis[j];
+        }
+      }
+      for(int j = i + 1; j <= LG; j++){
+        if(basis[j]&(1ll << i)){
+          basis[j] ^= basis[i];
+        }
+      }
+    }
+  }
   int kthLarge(int k){
     if((1ll << sz) < k)return -1;
     int x = 0, n = sz;
@@ -45,14 +58,11 @@ struct Basis{
     }
     return x;
   }
-
   int kthSmall(int k){
     return kthLarge((1ll << sz) - k);
   }
-
 } xo;
-
-
+$1
 ]]></content>
 	<tabTrigger>XOR_BASIS</tabTrigger>
 	<scope>source.c++</scope>
