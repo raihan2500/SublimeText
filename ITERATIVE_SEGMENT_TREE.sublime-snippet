@@ -1,6 +1,9 @@
 <snippet>
 	<content><![CDATA[
 
+inline int Max(int a, int b){return max(a, b);}
+inline int Min(int a, int b){return min(a, b);}
+
 const int RET = 0;
 inline int Pull(int a, int b){
   return a + b;
@@ -41,7 +44,7 @@ struct ST{
   }
 };
 
-
+$1
 ]]></content>
 	<tabTrigger>ITERATIVE_SEGMENT_TREE</tabTrigger>
 	<scope>source.c++</scope>
