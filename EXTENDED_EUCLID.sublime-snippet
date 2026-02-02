@@ -1,7 +1,10 @@
 <snippet>
 	<content><![CDATA[
 
+
 /*
+  ax + by = gcd(a, b);
+  x, y = ?
   Extended Euclid Algorithm
   a*x + b*y = gcd(a, b) ............(1)
   
@@ -15,8 +18,12 @@ From (1) and (2)
 => y = x1 - [a/b]*y1
 */
 
-pii e_gcd(int a, int b){
-  if(!b)return {1, 0};
+int G;
+pair<int, int> e_gcd(int a, int b){
+  if(!b){
+    G = a;
+    return {1, 0};
+  }
   auto [x1, y1] = e_gcd(b, a%b);
   int x = y1;
   int y = x1 - (a / b)*y1;
@@ -25,6 +32,21 @@ pii e_gcd(int a, int b){
 
 int mmiofX(int a, int mod){
   return (mod + e_gcd(a, mod).first)%mod;
+}
+
+/* 
+  Linear Congruence
+  ax = b (mod m)
+  x = ?  
+*/
+
+int congruence(int a, int b, int m){
+  int g = gcd(a, m);
+  if(b % g)return 0;
+  a /= g, b /= g, m /= g;
+  int a1 = mmiofX(a, m);
+  int x = (b * a1)%m;
+  return x;
 }
 $1
 ]]></content>
