@@ -1,0 +1,17 @@
+<snippet>
+	<content><![CDATA[
+
+vector<int> decompose(int c){
+  vector<int> ans;
+  for(int i = 1; c; i <<= 1){
+    ans.push_back(min(c, i));
+    c -= ans.back();
+  }
+  return ans;
+}
+$1
+]]></content>
+	<tabTrigger>BINARY_DECOMPOSE</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
