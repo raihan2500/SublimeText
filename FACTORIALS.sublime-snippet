@@ -23,6 +23,7 @@ void factorial(){
 }
 int nCr(int n, int r){return (__uint128_t) (fact[n] * inv[r] % M) * inv[n - r] % M; }
 int nPr(int n, int r){return (__uint128_t) fact[n] * inv[n - r] % M; }
+int starsAndBars(int n, int k){return nCr(n + k - 1, n - 1);} //Distributing k identical items into n boxes
 
 $1
 ]]></content>
