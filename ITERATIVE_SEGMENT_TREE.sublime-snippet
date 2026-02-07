@@ -4,12 +4,11 @@
 inline int Max(int a, int b){return max(a, b);}
 inline int Min(int a, int b){return min(a, b);}
 
-const int RET = 0;
 inline int Pull(int a, int b){
   return a + b;
 }
 
-template<typename T = int, T(*pull)(T, T) = Pull, T R = RET>
+template<typename T = int, T(*pull)(T, T) = Pull>
 struct ST{
   int n; 
   vector<T> v, t;
@@ -28,14 +27,14 @@ struct ST{
 
   void update(int i, T val){
     i += n;  
-    t[i] = val; //replace
+    t[i] = val; //replace query
     for(i >>= 1; i >= 1; i >>= 1){
       t[i] = pull(t[i << 1], t[i << 1 | 1]);
     }
   }
   T query(int l, int r){
     l += n; r += n;
-    T ans = R;
+    T ans = 0; //Need change
     for(; l <= r; l >>= 1, r >>= 1){
       if(l % 2 == 1)ans = pull(ans, t[l++]);
       if(r % 2 == 0)ans = pull(ans, t[r--]);
