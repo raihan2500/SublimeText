@@ -1,9 +1,5 @@
 <snippet>
 	<content><![CDATA[
-
-mt19937                     rng(chrono::steady_clock::now().time_since_epoch().count());
-#define rng(x,y)            uniform_int_distribution<int>(x,y)(rng)
-#define ll long long
 typedef uint64_t ull;
 struct H {
   ull x; H(ull _x=0) : x(_x) {}
@@ -17,7 +13,7 @@ struct H {
   friend std::ostream& operator << (std::ostream &os, const H &h){ return os << h.x; }
   friend std::istream& operator >> (std::istream &is, H &h){int x; cin >> x; return h.x = x, is;}
 };
-static const H C = (ll)rng(1e10,1e12); // (order ~ 3e9; random also ok)
+static const H C = (long long)rng(1e10,1e12); // (order ~ 3e9; random also ok)
 
 struct Hash {
   vector<H> ha, pw;
@@ -42,8 +38,7 @@ struct Hash {
     }
   */
 };
-
-
+$1
 ]]></content>
 	<tabTrigger>HASH_INTERVAL</tabTrigger>
 	<scope>source.c++</scope>
