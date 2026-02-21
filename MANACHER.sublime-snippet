@@ -4,10 +4,10 @@
 string preprocess(string &str){
   string res = "*";
   for(auto &i : str){
-    res.push_back('$');
+    res.push_back('#');
     res.push_back(i);
   }
-  res += "$#";
+  res += "#7";
   return res;
 }
 
