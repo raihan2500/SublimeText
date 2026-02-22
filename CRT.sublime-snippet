@@ -1,0 +1,29 @@
+<snippet>
+	<content><![CDATA[
+using T = int;
+
+T G;
+pair<T, T> e_gcd(T a, T b){
+  if(!b){
+    G = a;
+    return {1, 0};
+  }
+  auto [x1, y1] = e_gcd(b, a%b);
+  T x = y1;
+  T y = x1 - (a / b)*y1;
+  return {x, y};
+}
+
+pair<T, T> CRT(T a1, T m1, T a2, T m2){
+  auto [p, q] = e_gcd(m1, m2);
+  if(a1 % G != a2 % G)return {0, -1};
+  T m = (m1 / G) * m2;
+  T x = ((a1*m2%m)*q%m + (a2*m1%m)*p%m) % m;
+  return {x, m};
+}
+$1
+]]></content>
+	<tabTrigger>CRT</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
