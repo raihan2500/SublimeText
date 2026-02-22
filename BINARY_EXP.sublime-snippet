@@ -8,7 +8,15 @@ int binExp(int a, int b, int mod = M){
   }
   return ans;
 }
+int bigMult(int a, int b, int mod = M){
+  int ans = 0;
+  for(; b; b >>= 1, a += a){
+    if(b&1)ans += a;
+  }
+  return ans;
+}
 int mmiOfX(int b, int mod = M){ return binExp(b, mod - 2);}
+
 
 $1
 ]]></content>
