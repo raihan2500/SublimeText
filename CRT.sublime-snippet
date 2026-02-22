@@ -3,6 +3,8 @@
 using T = int;
 
 T G;
+// ax + by = __gcd(a, b)
+//returns {x, y}; here G = gcd(a, b);
 pair<T, T> e_gcd(T a, T b){
   if(!b){
     G = a;
@@ -14,11 +16,13 @@ pair<T, T> e_gcd(T a, T b){
   return {x, y};
 }
 
+// finds x such that x % m1 = a1, x % m2 = a2. m1 and m2 may not be coprime
+// here, x is unique modulo m = lcm(m1, m2). returns (x, m). on failure, m = -1.
 pair<T, T> CRT(T a1, T m1, T a2, T m2){
   auto [p, q] = e_gcd(m1, m2);
   if(a1 % G != a2 % G)return {0, -1};
   T m = (m1 / G) * m2;
-  T x = ((a1*m2%m)*q%m + (a2*m1%m)*p%m) % m;
+  T x = (m + (a1*m2%m)*q%m + (a2*m1%m)*p%m) % m;
   return {x, m};
 }
 $1
