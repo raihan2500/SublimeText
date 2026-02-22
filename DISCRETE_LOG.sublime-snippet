@@ -1,0 +1,31 @@
+<snippet>
+	<content><![CDATA[
+
+//min x for which a^x % m == b
+int discreteLog(int a, int b, int m){
+  a %= m, b %= m;
+  int n = sqrt(m) + 1;
+  int h = 1;
+  for(int i = 0; i < n; i++){
+    h = h * a % m;
+  }
+  unordered_map<int, int> mp;
+  for(int i = 0, cur = b; i < n; i++){
+    mp[cur] = i;
+    cur = (cur * a) % m;
+  }
+  for(int p = 1, cur = 1; p <= n; p++){
+    cur = (cur * h) % m;
+    if(mp.count(cur)){
+      int ans = n * p - mp[cur];
+      return ans;
+    }
+  }
+  return -1;
+}
+$1
+]]></content>
+	<tabTrigger>DISCRETE_LOG</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
