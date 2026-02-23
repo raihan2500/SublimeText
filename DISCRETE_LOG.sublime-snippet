@@ -2,6 +2,7 @@
 	<content><![CDATA[
 
 //min x for which a^x % m == b
+//Complexity O(√m)
 int discreteLog(int a, int b, int m){
   a %= m, b %= m;
   int n = sqrt(m) + 1;
