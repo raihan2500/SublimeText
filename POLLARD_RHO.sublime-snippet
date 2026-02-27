@@ -1,6 +1,5 @@
 <snippet>
 	<content><![CDATA[
-
 namespace Pollard{
   #define int long long
   mt19937 rnd(chrono::steady_clock::now().time_since_epoch().count());
@@ -94,9 +93,9 @@ namespace Pollard{
     return v;
   }
 
-  void allDivsGen(int ind, int curVal, vector<pair<int, int>> &pmFact, set<int> &ans){
+  void allDivsGen(int ind, int curVal, vector<pair<int, int>> &pmFact, vector<int> &ans){
     if(pmFact[ind].first == -1){
-      ans.insert(curVal);
+      ans.push_back(curVal);
       return;
     }
     for(int i = 0; i <= pmFact[ind].second; i++){
@@ -104,9 +103,12 @@ namespace Pollard{
       curVal *= pmFact[ind].first;
     }
   }
-  
-  set<int> allDivisors(int n){
-    set<int> ans;
+
+  map<int, vin> dp;
+  vector<int> allDivisors(int n){
+    auto it = dp.find(n);
+    if(it != dp.end())return it->second;
+    vector<int> ans;
     vector<pair<int, int>> prime_factors;
     vector<int> fact = factorize(n);
     unordered_map<int, int> mp;
@@ -114,7 +116,8 @@ namespace Pollard{
     for(auto i : mp)prime_factors.push_back({i.first, i.second});
     prime_factors.push_back({-1, -1});
     allDivsGen(0, 1, prime_factors, ans);
-    return ans;
+    int x = ans.size();
+    return dp[n] = ans;
   }
 }
 $1
