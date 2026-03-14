@@ -1,5 +1,6 @@
 <snippet>
 	<content><![CDATA[
+
 int binExp(int a, int b, int mod = M){
   int ans = 1; a %= mod;
   for(; b; b >>= 1, a = (__uint128_t) a * a % mod){
@@ -18,7 +19,7 @@ int mmiOfX(int b, int mod = M){ return binExp(b, mod - 2);}
 
 
 int fact[N], inv[N];
-void factorial(){
+void init(){
   fact[0] = inv[0] = 1;
   for(int i = 1; i < N; i++){
     fact[i] = fact[i - 1] * i % M;
