@@ -41,7 +41,7 @@ void init(){
 int nCr(int n, int r){return (__uint128_t) (fact[n] * inv[r] % M) * inv[n - r] % M; }
 int nPr(int n, int r){return (__uint128_t) fact[n] * inv[n - r] % M; }
 int catalan(int n){return nCr(2*n, n) * mmiOfX(n + 1) % M; }
-int starsAndBars(int n, int k){return nCr(n + k - 1, k);}
+int starsAndBars(int n, int k){return nCr(n - 1 + k, k);}
 $1
 ]]></content>
 	<tabTrigger>COMBINATORICS</tabTrigger>
