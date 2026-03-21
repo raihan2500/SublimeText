@@ -16,7 +16,7 @@ void sieve(){
     }
   }
 }
-vector<int> divisors(int n){
+vector<int> factors(int n){
   vector<int> ans;
   while(n > 1){
     int p = hp[n];
