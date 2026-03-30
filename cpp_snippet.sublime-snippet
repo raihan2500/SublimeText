@@ -67,11 +67,12 @@ signed main(){
   int test = 1;  
   cin>>test;
   for(int i = 1; i <= test; i++){
-      // cout << "Case " << i <<": ";
-      _();
+    // cout << "Case " << i <<": ";
+    _();
   }
   return 0;
 }
+
 $1
 ]]></content>
 	<tabTrigger>cpp_snippet</tabTrigger>
