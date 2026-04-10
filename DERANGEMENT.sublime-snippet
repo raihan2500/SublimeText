@@ -1,14 +1,24 @@
 <snippet>
 	<content><![CDATA[
 int derangement(int n){
+  if(n < 2)return 0;
   vector<int> dp(n + 1);
   dp[2] = 1;
   for(int i = 3; i <= n; i++){
     dp[i] = (i - 1) * (dp[i - 1] + dp[i - 2]) % M;
   }
+  /**Incusion-Exclusion Method**/
+  // int tot = fact[n];
+  // for(int i = 1; i <= n; i++){
+  //   int cur = nCr(n, i) * fact[n - i];
+  //   if(i & 1){
+  //     tot = (tot - cur + M) % M;
+  //   }else{
+  //     tot = (tot + cur + M) % M;
+  //   }
+  // }
   return dp[n];
 }
-
 $1
 ]]></content>
 	<tabTrigger>DERANGEMENT</tabTrigger>
