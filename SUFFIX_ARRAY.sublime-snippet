@@ -1,103 +1,82 @@
 <snippet>
 	<content><![CDATA[
-
+template<char MIN_CHAR = '$', int ALPHA = 256>
 struct SuffixArray{
   int n;
-  string str;
-  vector<int> sa, rank, lcp;
-  SuffixArray(){};
-  SuffixArray(string str) : str(str){
-    build(str); n = sa.size(); rank.pop_back();
-    for(int i = 0; i < n; i++)rank[sa[i]] = i;
-    kasai();
-  };
-  
-  void build(string str){
-    str.push_back(1);
-    int n = str.size();
-    sa.assign(n, 0); rank.assign(n, 0);
-    vector<pair<pair<int, int>, int>> v(n);
-    
-    for(int i = 0; i < n; i++)v[i] = {{str[i], 0}, i};
-    counting_sort(v);
-    for(int i = 0; i < n; i++)sa[i] = v[i].second;
+  string s;
+  vector<int> pos, sa, lcp;
 
-    for(int i = 1; i < n; i++){
-      if(v[i].first == v[i - 1].first){
-        rank[sa[i]] = rank[sa[i - 1]];
-      }else{
-        rank[sa[i]] = rank[sa[i - 1]] + 1;
-      }
-    }
-    for(int k = 0; (1 << k) < n; k++){
-      for(int i = 0, j; i < n; i++){
-        v[i] = {{rank[i], rank[(i + (1 << k)) % n] }, i};
-      }
-      counting_sort(v);
-      for(int i = 0; i < n; i++)sa[i] = v[i].second;
-      rank[sa[0]] = 0;
-      for(int i = 1; i < n; i++){
-        if(v[i].first == v[i - 1].first){
-          rank[sa[i]] = rank[sa[i - 1]];
-        }else{
-          rank[sa[i]] = rank[sa[i - 1]] + 1;
-        }
-      }
-    }
+  SuffixArray(){}
+  SuffixArray(const string &_s){
+    s = _s + MIN_CHAR;
+    n = s.size();
+    pos.assign(n, 0);
+    sa.assign(n, 0);
+    lcp.assign(n - 1, 0);
+    buildSA();
+    buildLCP();
     sa.erase(sa.begin());
   }
 
-  void kasai(){
-    int n = sa.size();
-    lcp.assign(n, 0);
-    for(int i = 0, k = 0; i < n; i++){
-      if(rank[i] == 0){k = 0; continue;}
-      int j = sa[rank[i] - 1];
-      while(i + k < n and j + k < n and str[i + k] == str[j + k])k++;
-      lcp[rank[i]] = k;
-      if(k)k--;
+  void buildSA(){
+    vector<int> cnt(max(ALPHA, n), 0);
+    for(int i = 0; i < n; i++) cnt[s[i]]++;
+    for(int i = 1; i < ALPHA; i++) cnt[i] += cnt[i - 1];
+    for(int i = n - 1; i >= 0; i--) pos[--cnt[s[i]]] = i;
+
+    for(int i = 1; i < n; i++){
+      sa[pos[i]] = sa[pos[i - 1]] + (s[pos[i]] != s[pos[i - 1]]);
+    }
+
+    for(int k = 0; (1LL << k) < n; k++){
+      vector<int> npos(n), nsa(n), ncnt(n, 0);
+
+      for(int i = 0; i < n; i++) pos[i] = (pos[i] - (1LL << k) + n) % n;
+      for(int i = 0; i < n; i++) ncnt[sa[i]]++;
+      for(int i = 1; i < n; i++) ncnt[i] += ncnt[i - 1];
+      for(int i = n - 1; i >= 0; i--) npos[--ncnt[sa[pos[i]]]] = pos[i];
+
+      for(int i = 1; i < n; i++){
+        pair<int,int> cur = {sa[npos[i]], sa[(npos[i] + (1LL << k)) % n]};
+        pair<int,int> pre = {sa[npos[i - 1]], sa[(npos[i - 1] + (1LL << k)) % n]};
+        nsa[npos[i]] = nsa[npos[i - 1]] + (cur != pre);
+      }
+      pos = npos;  sa = nsa;
     }
   }
 
-  void counting_sort(vector<pair<pair<int,int>,int>> &v){
-    int n = v.size();
-    int mx = 0;
-    for(int i = 0; i < n; i++)mx = max({mx, v[i].first.first, v[i].first.second});
-    vector<pair<pair<int,int>,int>> ans(n);
-    vector<int> cnt(mx + 1);
-    for(int i = 0; i < n; i++)cnt[v[i].first.second]++;
-    for(int i = 1; i <= mx; i++)cnt[i]+=cnt[i-1];
-    for(int i = n - 1; i>=0; i--){
-      ans[--cnt[v[i].first.second]] = v[i];
+  void buildLCP(){
+    for(int i = 0, k = 0; i < n - 1; i++, k = max(k - 1, 0LL)){
+      int j = pos[sa[i] - 1];
+      while(s[i + k] == s[j + k])k++;
+      lcp[sa[i] - 1] = k;
     }
-    v = ans;
-    fill(cnt.begin(), cnt.end(),0);
-
-    for(int i = 0; i < n; i++)cnt[v[i].first.first]++;
-    for(int i = 1; i <= mx; i++)cnt[i]+=cnt[i-1];
-    for(int i = n - 1; i>=0; i--){
-      ans[--cnt[v[i].first.first]] = v[i];
-    }
-    v = ans;
   }
+
   int count(string pat){
     int m = pat.size();
-    int n = sa.size();
-    int lo = 0, hi = n - 1, lb;
-    while(hi > lo){
-      int mid = (hi + lo) >> 1;
-      if(str.compare(sa[mid], m, pat) < 0)lo = mid + 1;
+    int lo = 1, hi = n - 1, lb;
+    while(lo < hi){
+      int mid = (lo + hi) >> 1;
+      if(s.compare(pos[mid], m, pat) < 0) lo = mid + 1;
       else hi = mid;
     }
-    if(str.compare(sa[lo], m, pat))return 0;
-    
-    lb = lo;  hi = n - 1;
-    while(hi > lo){
-      int mid = (hi + lo + 1) >> 1;
-      if(str.compare(sa[mid], m, pat) <= 0)lo = mid;
+    if(s.compare(pos[lo], m, pat) != 0)return 0;
+    lb = lo;
+    hi = n - 1;
+    while(lo < hi){
+      int mid = (lo + hi + 1) >> 1;
+      if(s.compare(pos[mid], m, pat) <= 0) lo = mid;
       else hi = mid - 1;
     }
-    return hi - lb + 1;
+    return lo - lb + 1;
+  }
+
+  int cntSubstr(){
+    int len = n - 1;
+    int ans = len * (len + 1) / 2;
+    for(int x : lcp) ans -= x;
+    return ans;
   }
 };
 $1
