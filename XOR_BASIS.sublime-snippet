@@ -1,67 +1,60 @@
 <snippet>
 	<content><![CDATA[
-
 const int LG = 62;
 struct Basis{
-  int sz = 0; vector<int> basis = vector<int>(LG + 1);
+  int sz = 0;
+  vector<int> basis = vector<int>(LG + 1);
+
   void insert(int x){
     for(int i = LG; i >= 0; i--){
-      if(!(x & (1ll << i)))continue;
+      if(!(x & (1LL << i))) continue;
       if(!basis[i]){
         basis[i] = x;
-        sz++; return;
+        sz++;
+        return;
       }
       x ^= basis[i];
     }
   }
+
   bool can(int x){
-    for(int i = LG; i >= 0; i--){
+    for(int i = LG; i >= 0; i--)
       x = min(x, x ^ basis[i]);
-    }
     return x == 0;
   }
-  int Max(int ans = 0){
-    for(int i = LG; i >= 0; i--){
+
+  int getMax(int ans = 0){
+    for(int i = LG; i >= 0; i--)
       ans = max(ans, ans ^ basis[i]);
-    }
     return ans;
   }
 
-  void nomalize(){ //use before kth query
-    for(int i = LG; i >= 0; i--){
-      if(!basis[i])continue;
-      for(int j = i - 1; j >= 0; j--){
-        if(basis[j] and (basis[i]&(1ll << j))){
-          basis[i] ^= basis[j];
-        }
-      }
-      for(int j = i + 1; j <= LG; j++){
-        if(basis[j]&(1ll << i)){
-          basis[j] ^= basis[i];
-        }
-      }
+  void normalize(){
+    for(int i = 0; i <= LG; i++){
+      if(!basis[i]) continue;
+      for(int j = i - 1; j >= 0; j--)
+        if(basis[i] & (1LL << j)) basis[i] ^= basis[j];
     }
+  }
+
+  // 0-indexed kth smallest xor value
+  // call normalize() before using
+  int kthSmall(int k){
+    if(k >= (1LL << sz)) return -1;
+
+    int ans = 0, id = 0;
+    for(int i = 0; i <= LG; i++){
+      if(!basis[i]) continue;
+      if(k & (1LL << id)) ans ^= basis[i];
+      id++;
+    }
+    return ans;
   }
   int kthLarge(int k){
-    if((1ll << sz) < k)return -1;
-    int x = 0, n = sz;
-    for(int i = LG; i >= 0; i--){
-      if(!basis[i])continue;
-      int b = 1ll << i; n--;
-      int rem = 1ll << n;
-      if(rem > k){
-        ((x & b) == 0) and (x ^= basis[i]);
-      }else{
-        ((x & b)) and (x ^= basis[i]);
-        k -= rem;
-      }
-    }
-    return x;
+    if(k >= (1LL << sz)) return -1;
+    return kthSmall((1LL << sz) - 1 - k);
   }
-  int kthSmall(int k){
-    return kthLarge((1ll << sz) - k);
-  }
-} xo;
+};
 $1
 ]]></content>
 	<tabTrigger>XOR_BASIS</tabTrigger>
