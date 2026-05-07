@@ -16,7 +16,6 @@ struct SuffixArray{
     lcp.assign(n - 1, 0);
     buildSA();
     buildLCP();
-    sa.erase(sa.begin());
   }
 
   void buildSA(){
