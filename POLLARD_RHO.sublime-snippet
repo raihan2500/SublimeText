@@ -55,21 +55,25 @@ namespace Pollard{
   }
   
   //Pollard rho
-  int func(int x, int c, int mod){
-    return ((__uint128_t) x * x % mod + c) % mod;
-  }    
+  int func(int x, int c, int mod) {
+    return ((__uint128_t)x * x + c) % mod;
+  }
+  int rho(int n) {
+    if (n % 2 == 0) return 2;
+    while (true) {
+      int c = 1 + rnd() % (n - 1);
+      int x = 2 + rnd() % (n - 2);
+      int y = x;
+      int d = 1;
+      while (d == 1) {
+        x = func(x, c, n);
+        y = func(func(y, c, n), c, n);
 
-  int rho(int n){
-    int c = 1 + rnd() % (n - 2);
-    int x =  2 + rnd() % (n - 2);
-    int y = x, d = 1;
-
-    while(d == 1){
-      x = func(x, c, n);
-      y = func(func(y, c, n), c, n);
-      d = __gcd(abs(x - y), n);
+        int diff = abs(x - y);
+        d = __gcd(diff, n);
+      }
+      if (d != n) return d;
     }
-    return d;
   }
 
   vector<int> factorize(int n){
@@ -120,6 +124,7 @@ namespace Pollard{
     return dp[n] = ans;
   }
 }
+
 $1
 ]]></content>
 	<tabTrigger>POLLARD_RHO</tabTrigger>
