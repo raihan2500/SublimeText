@@ -1,18 +1,30 @@
 <snippet>
 	<content><![CDATA[
-
 int hp[N]; bool isPrime[N];
-vector<int> primes;
+vector<int> primes, mu(N);
+vin divs[N];
 
 void sieve(){
+  mu[1] = 1;
   for(int i = 2; i < N; i++){
     if(!hp[i]){
       hp[i] = i; isPrime[i] = 1;
       primes.push_back(i);
+      mu[i] = -1;
     }
     for(auto &p : primes){
       if(p > hp[i] or i * p >= N)break;
       hp[i * p] = p;
+      if(i%p == 0){
+        mu[i*p] = 0; 
+        break;
+      }
+      else mu[i*p] = -mu[i];
+    }
+  }
+  for(int i = 1; i < N; i++){
+    for(int j = i; j < N; j += i){
+      divs[j].push_back(i);
     }
   }
 }
