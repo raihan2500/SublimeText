@@ -1,74 +1,364 @@
 <snippet>
 	<content><![CDATA[
+const double eps = 1e-9;
+const double PI = acos(-1.0);
+int sign(double x){return (x > eps) - (x < -eps);}
 
-double dot(point a, point b){
+struct point{
+  double x, y;
+  point(){x = 0, y = 0;}
+  point(double x, double y) : x(x), y(y){}
+  point(const point &p) : x(p.x), y(p.y){};
+
+  inline point operator + (const point &a)const {return point(x + a.x, y + a.y);}
+  inline point operator - (const point &a)const {return point(x - a.x, y - a.y);}
+  inline point operator * (const double a)const {return point(x * a, y * a);}
+  inline point operator / (const double a)const {return point(x / a, y / a);}
+
+  inline point & operator += (const point &a){x += a.x, y += a.y; return *this;}
+  inline point & operator -= (const point &a){x -= a.x, y -= a.y; return *this;}
+
+  inline bool operator == (const point &a) const{return sign(a.x - x) == 0 and sign(a.y - y) == 0;}
+  inline bool operator != (const point &a) const{return !(*this == a);}
+  inline bool operator < (const point &a)const{ return sign(a.x - x) == 0 ? y < a.y : x < a.x;}
+  inline bool operator > (const point &a)const{ return sign(a.x - x) == 0 ? y > a.y : x > a.x;}
+
+  double norm(){return sqrt(x * x + y * y);}
+  double norm2(){return x * x + y * y;}
+  point perp(){return point(-y, x);} //Perpendicular vector
+  double arg(){return atan2(y, x); } //Angle in radian: tan-1(y / x); range: -PI to PI
+  point truncate(double r){
+    double k = norm();
+    if(!sign(k))return *this;
+    r /= k;
+    return point(x * r, y * r);
+  }
+
+  friend std::ostream& operator<<(std::ostream &os, const point &a){return os <<"(" << a.x <<", " << a.y <<")";}
+  friend std::istream& operator >>(std::istream &is, point &a){return is >> a.x >> a.y;}
+} p0;
+
+double dot(point a, point b){ // A · B = |A||B|cos(θ)
   return a.x * b.x + a.y * b.y;
 }
 
-double cross(point a, point b){
-  return a.x * b.y + a.y * b.x;
+double cross(point a, point b){ // A x B = |A||B|sin(θ), signed area * 2
+  return a.x * b.y - a.y * b.x;
 }
 
-double angle(point a, point b){ //cosθ = A.B / (|A|*|B|)
-  return dot(a, b) / a.norm() / b.norm();
+double cross(point a, point b, point c){ // AB x AC
+  return cross(b - a, c - a);
 }
 
-double proj(point a, point b){ // |A|cosθ
-  return dot(a, b) / b.norm();
+double norm2(point a){ // |A|^2
+  return dot(a, a);
 }
 
-double dist_euclid(point a, point b){
-  double dx = a.x - b.x;
-  double dy = a.y - b.y;
-  return dx*dx + dy*dy;
+double norm(point a){ // |A|
+  return sqrt(norm2(a));
 }
 
-int orient(point a, point b, point c){
-  int cross = (c.y - a.y)*(b.x - a.x) - (b.y - a.y)*(c.x - a.x);
-  if(cross == 0)return 0;   //same line
-  return cross > 0 ? 1 : -1; // left (+1) : right (-1)
+double dist(point a, point b){ // distance between A and B
+  return norm(a - b);
 }
 
-/************* point c lies on ab line or not **************/
-bool on_segment(point a, point b, point c){ 
-  if(orient(a, b, c))return false;
-  return (c.x >= min(a.x, b.x) and c.x <= max(a.x, b.x)) and (c.y >= min(a.y, b.y) and c.y <= max(a.y, b.y));
+double angle(point a, point b){ // θ = acos((A · B) / (|A||B|))
+  return acos(max((double) -1.0, min((double) 1.0, dot(a, b) / norm(a) / norm(b))));
 }
 
-/************* ab and cd lines are intersecting or not ***************/
-bool line_intersect(point a, point b, point c, point d){
-  int o1 = orient(a, b, c);
-  int o2 = orient(a, b, d);
-  int o3 = orient(c, d, a);
-  int o4 = orient(c, d, b);
-
-  if(o1 != o2 and o3 != o4)return true;
-  else if(!o1 and on_segment(a, b, c))return true;
-  else if(!o2 and on_segment(a, b, d))return true;
-  else if(!o3 and on_segment(c, d, a))return true;
-  else if(!o4 and on_segment(c, d, b))return true;
-  else return false;
+double triangleArea(point a, point b, point c){ // area = |AB x AC| / 2
+  return fabs(cross(a, b, c)) / 2.0;
 }
 
-/************* area of a polygon of v[0], v[1],...v[n - 1] points *************/
-double polygon_area(vector<point> &v){
-  int n = v.size();
+point rotate(point a, double rad){ // rotate A by radian angle
+  return point(a.x * cos(rad) - a.y * sin(rad), a.x * sin(rad) + a.y * cos(rad));
+}
+
+int orientation(point a, point b, point c){ // +1 = CCW, -1 = CW, 0 = collinear
+  return sign(cross(a, b, c));
+}
+
+bool onSegment(point a, point b, point p){ // check if P lies on segment AB
+  if(orientation(a, b, p) != 0) return false;
+  return p.x >= min(a.x, b.x) - eps && p.x <= max(a.x, b.x) + eps &&
+         p.y >= min(a.y, b.y) - eps && p.y <= max(a.y, b.y) + eps;
+}
+
+bool segmentIntersect(point a, point b, point c, point d){ // check if segment AB intersects segment CD
+  int o1 = orientation(a, b, c), o2 = orientation(a, b, d);
+  int o3 = orientation(c, d, a), o4 = orientation(c, d, b);
+  if(o1 != o2 && o3 != o4) return true;
+  if(o1 == 0 && onSegment(a, b, c)) return true;
+  if(o2 == 0 && onSegment(a, b, d)) return true;
+  if(o3 == 0 && onSegment(c, d, a)) return true;
+  if(o4 == 0 && onSegment(c, d, b)) return true;
+  return false;
+}
+
+bool areLinesParallel(point a, point b, point c, point d){ // AB || CD if AB x CD = 0
+  return sign(cross(b - a, d - c)) == 0;
+}
+
+bool areLinesSame(point a, point b, point c, point d){ // same line if parallel and C lies on AB
+  return areLinesParallel(a, b, c, d) && sign(cross(b - a, c - a)) == 0;
+}
+
+bool lineIntersection(point a, point b, point c, point d, point &ans){ // intersection of line AB and CD
+  point r = b - a, s = d - c;
+  double den = cross(r, s);
+  if(sign(den) == 0) return false;
+  ans = a + r * (cross(c - a, s) / den);
+  return true;
+}
+
+point projectpointLine(point a, point b, point p){ // projection of P on line AB
+  point ab = b - a;
+  if(sign(norm2(ab)) == 0) return a;
+  return a + ab * (dot(p - a, ab) / norm2(ab));
+}
+
+point reflectionpointLine(point a, point b, point p){ // reflection of P across line AB
+  point q = projectpointLine(a, b, p);
+  return q * 2 - p;
+}
+
+double distpointLine(point a, point b, point p){ // distance from P to line AB = |AB x AP| / |AB|
+  if(a == b) return dist(a, p);
+  return fabs(cross(b - a, p - a)) / norm(b - a);
+}
+
+point projectpointSegment(point a, point b, point p){ // closest point from P on segment AB
+  point ab = b - a;
+  if(sign(norm2(ab)) == 0) return a;
+  double t = dot(p - a, ab) / norm2(ab);
+  if(t < 0) return a;
+  if(t > 1) return b;
+  return a + ab * t;
+}
+
+double distpointSegment(point a, point b, point p){ // distance from P to segment AB
+  return dist(p, projectpointSegment(a, b, p));
+}
+
+double distSegmentSegment(point a, point b, point c, point d){ // distance between segment AB and CD
+  if(segmentIntersect(a, b, c, d)) return 0;
+  return min({distpointSegment(a, b, c), distpointSegment(a, b, d),
+              distpointSegment(c, d, a), distpointSegment(c, d, b)});
+}
+
+double polygonArea(vector<point> &p){ // shoelace: area = |sum cross(P[i], P[i+1])| / 2
+  double area = 0;
+  int n = p.size();
+  for(int i = 0; i < n; i++) area += cross(p[i], p[(i + 1) % n]);
+  return fabs(area) / 2.0;
+}
+
+double polygonPerimeter(vector<point> &p){
   double ans = 0;
-  for(int i = 0; i < n; i++){
-    point p1 = v[i];
-    point p2 = v[(i + 1) % n];
-    ans += (p1.x*p2.y) - (p2.x*p1.y); 
+  int n = p.size();
+  for(int i = 0; i < n; i++) ans += dist(p[i], p[(i + 1) % n]);
+  return ans;
+}
+
+bool ispointOnPolygon(vector<point> &p, point q){
+  int n = p.size();
+  for(int i = 0; i < n; i++)
+    if(onSegment(p[i], p[(i + 1) % n], q)) return true;
+  return false;
+}
+
+// 0 = outside, 1 = inside, 2 = boundary
+int pointInPolygon(vector<point> &p, point q){
+  if(ispointOnPolygon(p, q)) return 2;
+  bool inside = false;
+  int n = p.size();
+  for(int i = 0, j = n - 1; i < n; j = i++){
+    point a = p[i], b = p[j];
+    bool ok = ((a.y > q.y) != (b.y > q.y)) &&
+      (q.x < (b.x - a.x) * (q.y - a.y) / (b.y - a.y) + a.x);
+    if(ok) inside = !inside;
   }
-  return abs(ans / 2.0);
+  return inside;
 }
 
-/************ Lattice point on a line excluding endpoints *****************/
-int lattice_points_on_seg(point a, point b){
-  int dx = abs(b.x - a.x);
-  int dy = abs(b.y - a.y);
-  return __gcd(dx, dy) - 1;
+bool isConvex(vector<point> &p){
+  int n = p.size(), pos = 0, neg = 0;
+  for(int i = 0; i < n; i++){
+    int o = orientation(p[i], p[(i + 1) % n], p[(i + 2) % n]);
+    if(o > 0) pos = 1;
+    if(o < 0) neg = 1;
+  }
+  return !(pos && neg);
 }
 
+// Monotonic chain convex hull
+// <= 0 removes collinear points
+// < 0 keeps collinear boundary points
+vector<point> convexHull(vector<point> p){
+  sort(p.begin(), p.end());
+  p.erase(unique(p.begin(), p.end()), p.end());
+  int n = p.size();
+  if(n <= 1) return p;
+  vector<point> h;
+  for(int i = 0; i < n; i++){
+    while(h.size() >= 2 && orientation(h[h.size() - 2], h.back(), p[i]) <= 0) h.pop_back();
+    h.push_back(p[i]);
+  }
+  int lower = h.size();
+  for(int i = n - 2; i >= 0; i--){
+    while((int)h.size() > lower && orientation(h[h.size() - 2], h.back(), p[i]) <= 0) h.pop_back();
+    h.push_back(p[i]);
+  }
+  h.pop_back();
+  return h;
+}
+
+// input must be convex hull in CCW/CW order
+double convexDiameter(vector<point> &p){
+  int n = p.size();
+  if(n == 1) return 0;
+  if(n == 2) return dist(p[0], p[1]);
+  double ans = 0;
+  int j = 1;
+  for(int i = 0; i < n; i++){
+    int ni = (i + 1) % n;
+    while(fabs(cross(p[ni] - p[i], p[(j + 1) % n] - p[i])) >
+          fabs(cross(p[ni] - p[i], p[j] - p[i]))) j = (j + 1) % n;
+    ans = max(ans, dist(p[i], p[j]));
+  }
+  return ans;
+}
+
+// 0 = outside, 1 = inside, 2 = boundary
+// polygon must be strictly convex and ordered
+int pointInConvexPolygon(vector<point> &p, point q){
+  int n = p.size();
+  if(n < 3) return ispointOnPolygon(p, q) ? 2 : 0;
+  if(onSegment(p[0], p[1], q) || onSegment(p[0], p[n - 1], q)) return 2;
+  if(orientation(p[0], p[1], q) < 0 || orientation(p[0], p[n - 1], q) > 0) return 0;
+  int l = 1, r = n - 1;
+  while(l + 1 < r){
+    int mid = (l + r) >> 1;
+    if(orientation(p[0], p[mid], q) >= 0) l = mid;
+    else r = mid;
+  }
+  int o = orientation(p[l], p[(l + 1) % n], q);
+  if(o == 0) return 2;
+  return o > 0 ? 1 : 0;
+}
+
+//:::::::::::::::Integer Geometry / Pick's Theorem:::::::::::::::
+struct Ipoint{
+  int x, y;
+  Ipoint(){}
+  Ipoint(int _x, int _y){ x = _x; y = _y; }
+};
+
+int polygonArea2(vector<Ipoint> &p){
+  int area = 0, n = p.size();
+  for(int i = 0; i < n; i++)
+    area += p[i].x * p[(i + 1) % n].y - p[i].y * p[(i + 1) % n].x;
+  return abs(area);
+}
+
+// excluding endpoints
+int latticepointsOnSegment(Ipoint a, Ipoint b){
+  return __gcd(abs(a.x - b.x), abs(a.y - b.y)) - 1;
+}
+
+// boundary lattice points of polygon
+int boundarypoints(vector<Ipoint> &p){
+  int ans = 0, n = p.size();
+  for(int i = 0; i < n; i++){
+    Ipoint a = p[i], b = p[(i + 1) % n];
+    ans += __gcd(abs(a.x - b.x), abs(a.y - b.y));
+  }
+  return ans;
+}
+
+// Pick's theorem: A = I + B / 2 - 1
+// returns number of interior lattice points
+int interiorpoints(vector<Ipoint> &p){
+  int A2 = polygonArea2(p), B = boundarypoints(p);
+  return (A2 - B + 2) / 2;
+}
+
+
+//:::::::::::::Circle Geometry:::::::::::::
+struct circle{
+  point o;
+  double r;
+  circle(){}
+  circle(point _o, double _r){ o = _o; r = _r; }
+
+  double area(){ return PI * r * r; }
+  double circumference(){ return 2.0 * PI * r; }
+};
+
+int circlePointRelation(circle c, point p){ // 0 = outside, 1 = on, 2 = inside
+  double d = dist(c.o, p);
+  if(sign(d - c.r) == 0) return 1;
+  return d < c.r ? 2 : 0;
+}
+
+circle circleFrom2Points(point a, point b){ // circle with AB as diameter
+  return circle((a + b) / 2.0, dist(a, b) / 2.0);
+}
+
+circle circleFrom3Points(point a, point b, point c){ // circumcircle of triangle ABC
+  double A = norm2(a), B = norm2(b), C = norm2(c);
+  double d = 2.0 * cross(a, b, c);
+  point o((A * (b.y - c.y) + B * (c.y - a.y) + C * (a.y - b.y)) / d,
+          (A * (c.x - b.x) + B * (a.x - c.x) + C * (b.x - a.x)) / d);
+  return circle(o, dist(o, a));
+}
+
+// line AB and circle intersection
+vector<point> lineCircleIntersection(point a, point b, circle c){
+  point h = projectpointLine(a, b, c.o);
+  double d = dist(h, c.o);
+  if(d > c.r + eps) return {};
+  point dir = (b - a) / norm(b - a);
+  if(sign(d - c.r) == 0) return {h};
+  double len = sqrt(max(0.0, c.r * c.r - d * d));
+  return {h - dir * len, h + dir * len};
+}
+
+// circle-circle intersection points
+vector<point> circleCircleIntersection(circle a, circle b){
+  double d = dist(a.o, b.o);
+  if(sign(d) == 0) return {};
+  if(d > a.r + b.r + eps) return {};
+  if(d + min(a.r, b.r) + eps < max(a.r, b.r)) return {};
+
+  double x = (a.r * a.r - b.r * b.r + d * d) / (2.0 * d);
+  double h2 = a.r * a.r - x * x;
+  if(h2 < -eps) return {};
+
+  point v = (b.o - a.o) / d;
+  point p = a.o + v * x;
+  double h = sqrt(max(0.0, h2));
+  point per(-v.y, v.x);
+
+  if(sign(h) == 0) return {p};
+  return {p - per * h, p + per * h};
+}
+
+// area of intersection between two circles
+double circleCircleArea(circle a, circle b){
+  double d = dist(a.o, b.o);
+  if(d >= a.r + b.r) return 0;
+  if(d + min(a.r, b.r) <= max(a.r, b.r)){
+    double r = min(a.r, b.r);
+    return PI * r * r;
+  }
+
+  double x = (d * d + a.r * a.r - b.r * b.r) / (2.0 * d);
+  double y = d - x;
+  double A = a.r * a.r * acos(x / a.r) - x * sqrt(max(0.0, a.r * a.r - x * x));
+  double B = b.r * b.r * acos(y / b.r) - y * sqrt(max(0.0, b.r * b.r - y * y));
+  return A + B;
+}
 $1
 ]]></content>
 	<tabTrigger>GEO2D</tabTrigger>
