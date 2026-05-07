@@ -2,7 +2,6 @@
 	<content><![CDATA[
 int hp[N]; bool isPrime[N];
 vector<int> primes, mu(N);
-vin divs[N];
 
 void sieve(){
   mu[1] = 1;
