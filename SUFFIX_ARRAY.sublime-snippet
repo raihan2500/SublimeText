@@ -1,6 +1,7 @@
 <snippet>
 	<content><![CDATA[
-template<char MIN_CHAR = '$', int ALPHA = 256>
+
+template<char MIN_CHAR = '#', int ALPHA = 256>
 struct SuffixArray{
   int n;
   string s;
