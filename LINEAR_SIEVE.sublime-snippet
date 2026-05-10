@@ -21,11 +21,6 @@ void sieve(){
       else mu[i*p] = -mu[i];
     }
   }
-  for(int i = 1; i < N; i++){
-    for(int j = i; j < N; j += i){
-      divs[j].push_back(i);
-    }
-  }
 }
 vector<int> factors(int n){
   vector<int> ans;
