@@ -1,0 +1,70 @@
+<snippet>
+	<content><![CDATA[
+struct SAM{
+  struct state{
+    int len, link;
+    vector<int> next;
+    state(){
+      len = 0; link = -1;
+      next.assign(26, -1);
+    }
+  };
+  string str;
+  vector<state> st;
+  int m = 1, last = 0;
+  SAM(string str): str(str){
+    st.push_back(state()); 
+    for(auto &i : str)extend(i);
+  }
+
+  void extend(char c){
+    int cur = m++;
+    st.push_back(state());
+    st[cur].len = st[last].len + 1;
+    int idx = c - 'a';
+    int p = last;
+    while(p != -1 and st[p].next[idx] == -1){
+      st[p].next[idx] = cur;
+      p = st[p].link;
+    }
+
+    if(p == -1){
+      st[cur].link = 0;
+    }else{
+      int q = st[p].next[idx];
+      if(st[p].len + 1 == st[q].len){
+        st[cur].link = q;
+      }else{
+        int clone = m++;
+        st.push_back(state());
+        st[clone].len = st[p].len + 1;
+        st[clone].next = st[q].next;
+        st[clone].link = st[q].link;
+
+        while(p != -1 and st[p].next[idx] == q){
+          st[p].next[idx] = clone;
+          p = st[p].link;
+        }
+        st[cur].link = st[q].link = clone;
+      }
+    }
+    last = cur;
+  }
+  bool count(string str){
+    int cur = 0;
+    for(auto c : str){
+      int idx = c - 'a';
+      if(st[cur].next[idx] == -1){
+        return false;
+      }
+      cur = st[cur].next[idx];
+    }
+    return true;
+  }
+};
+$1
+]]></content>
+	<tabTrigger>SUFFIX_AUTOMATON</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
+
