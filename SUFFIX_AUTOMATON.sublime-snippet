@@ -50,7 +50,7 @@ struct SAM{
     }
     last = cur;
   }
-  bool count(string str){
+  int count(string str){
     int cur = 0;
     for(auto c : str){
       int idx = c - 'a';
