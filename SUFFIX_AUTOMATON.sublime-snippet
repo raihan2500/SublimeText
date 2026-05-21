@@ -50,6 +50,8 @@ struct SAM{
     }
     last = cur;
   }
+
+  //:::::::::::OPEARATIONS::::::::://
   int count(string str){
     int cur = 0;
     for(auto c : str){
@@ -60,6 +62,29 @@ struct SAM{
       cur = st[cur].next[idx];
     }
     return true;
+  }
+
+  int LCS(string str){
+    int v = 0, l = 0, best = 0;
+    for(auto c : str){
+      int idx = c - 'a';
+      if(st[v].next[idx] != -1){
+        l++;
+        v = st[v].next[idx];
+      }else{
+        while(v != -1 and st[v].next[idx] == -1){
+          v = st[v].link;
+        }
+        if(v == -1){
+          v = 0; l = 0;
+        }else{
+          l = st[v].len + 1;
+          v = st[v].next[idx];
+        }
+      }
+      best = max(best, l);
+    }
+    return best;
   }
 };
 $1
