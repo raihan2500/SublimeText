@@ -1,6 +1,6 @@
 <snippet>
 	<content><![CDATA[
-namespace Pollard{
+namespace pollard{
   #define int long long
   mt19937 rnd(chrono::steady_clock::now().time_since_epoch().count());
   const int N = 1e6 + 100;
